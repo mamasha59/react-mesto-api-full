@@ -1,0 +1,6 @@
+.card__like-button_active{
+    /* opacity: 0.5; */
+    background:url(../../../../images/Union.svg) no-repeat;
+    width: 22px;
+    height: 19px;
+}

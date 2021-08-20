@@ -1,0 +1,15 @@
+.card-open__name {
+    font-weight: normal;
+    font-size: 12px;
+    line-height: 15px;
+    color: #FFFFFF;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: 250px;
+}
+/* @media screen and (max-width:767px){
+    .card-open__name {
+      max-width: 250px;
+    }  
+} */
