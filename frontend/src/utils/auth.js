@@ -1,4 +1,4 @@
-export const BASE_URL = 'https://auth.nomoreparties.co';
+export const BASE_URL = 'http:/future.bright.nomoredomains.club/api';
 
 const handleOriginalResponse = (response) => {
     if (response.ok){
