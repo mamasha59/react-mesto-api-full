@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const { errors } = require('celebrate');
+const cors = require('cors');
 const userRoutes = require('./routes/users');
 const cardRoutes = require('./routes/cards');
 const { createUser, login } = require('./controllers/users');
@@ -20,11 +21,17 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 
 const { PORT = 3000 } = process.env;
 const app = express();
-
+app.use(cors());
 app.use(helmet());
 app.use(express.json());
 app.use(cookieParser());
 app.use(requestLogger); // подключаем логгер запросов
+
+app.get('/crash-test', () => { // ---краш тест
+  setTimeout(() => {
+    throw new Error('Сервер сейчас упадёт');
+  }, 0);
+});
 
 app.post('/signin', validationSignin, login); // ----авторизация
 app.post('/signup', validationSignUp, createUser);// ----регистрация
