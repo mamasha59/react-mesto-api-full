@@ -1,4 +1,4 @@
-export const BASE_URL = 'http:/future.bright.nomoredomains.club/api';
+export const BASE_URL = 'https:/future.bright.nomoredomains.club/api';
 
 const handleOriginalResponse = (response) => {
     if (response.ok){
