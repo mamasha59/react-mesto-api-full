@@ -23,6 +23,8 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 const { PORT = 3000 } = process.env;
 const app = express();
 
+app.use(cors());
+
 app.use(helmet());
 
 app.use(express.json());
@@ -31,7 +33,6 @@ app.use(cookieParser());
 
 app.use(requestLogger); // подключаем логгер запросов
 
-app.use(cors());
 
 app.use((req, res, next) => {
   res.append('Access-Control-Allow-Origin', ['*']);
