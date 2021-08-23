@@ -82,11 +82,11 @@ function App() {
           email={email}>
         </ProtectedRoute>
 
-        <Route path="/sign-up">         {/* ---регистрация*/}
+        <Route path="/signup">         {/* ---регистрация*/}
           <Register onRegister={handleRegistration} />
         </Route>
 
-        <Route path="/sign-in" >        {/*---авторизация*/}
+        <Route path="/signin" >        {/*---авторизация*/}
           <Login onEnter={handleEnterUser} />
         </Route>
 
