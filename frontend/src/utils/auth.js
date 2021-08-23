@@ -11,7 +11,7 @@ const handleOriginalResponse = (response) => {
 
 export const register = (password, email) => {
     console.log(JSON.stringify({"password":password, "email":email}))
-    return fetch(`${BASE_URL}/sign-up`, {
+    return fetch(`${BASE_URL}/signup`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -23,7 +23,7 @@ export const register = (password, email) => {
 
 export const logIn = (password, email) => {
     console.log(JSON.stringify({"password":password, "email":email}))
-    return fetch(`${BASE_URL}/sign-in`, {
+    return fetch(`${BASE_URL}/signin`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

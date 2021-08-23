@@ -16,7 +16,7 @@ function App() {
   function signOut() { //---выход
     localStorage.removeItem('jwt');
     setLoggedIn(false);
-    history.push('/signin');
+    history.push('/sign-in');
   }
 
   function tokenCheck() {        // проверим токен
@@ -35,7 +35,6 @@ function App() {
   }
   React.useEffect(() => {
     tokenCheck();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loggedIn]);
 
   function handleRegistration(password, email) {//----- регистрация 
@@ -43,7 +42,7 @@ function App() {
       .then((data) => {
         if (data) {
           setTooltip(!tooltip)
-          history.push('/signin');
+          history.push('/sign-in');
         }
       })
       .catch(err => {
@@ -83,16 +82,16 @@ function App() {
           email={email}>
         </ProtectedRoute>
 
-        <Route path="/signup">         {/* ---регистрация*/}
+        <Route path="/sign-up">         {/* ---регистрация*/}
           <Register onRegister={handleRegistration} />
         </Route>
 
-        <Route path="/signin" >        {/*---авторизация*/}
+        <Route path="/sign-in" >        {/*---авторизация*/}
           <Login onEnter={handleEnterUser} />
         </Route>
 
         <Route exact path="/">          {/* --перенаправлени пользователя*/}
-          {loggedIn ? <Redirect to="/profile" /> : <Redirect to="/signin" />}
+          {loggedIn ? <Redirect to="/profile" /> : <Redirect to="/sign-in" />}
         </Route>
       </Switch>
 
