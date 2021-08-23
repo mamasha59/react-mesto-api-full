@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const { errors } = require('celebrate');
 const cors = require('cors');
+const bodyParser = require('body-parser');
 const userRoutes = require('./routes/users');
 const cardRoutes = require('./routes/cards');
 const { createUser, login } = require('./controllers/users');
@@ -32,6 +33,11 @@ app.use(cookieParser());
 app.use(requestLogger); // подключаем логгер запросов
 
 app.use(cors());
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+  extended: true,
+}));
 
 app.get('/crash-test', () => { // ---краш тест
   setTimeout(() => {

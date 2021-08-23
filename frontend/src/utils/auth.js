@@ -22,7 +22,6 @@ export const register = (password, email) => {
 };
 
 export const logIn = (password, email) => {
-    console.log(JSON.stringify({"password":password, "email":email}))
     return fetch(`${BASE_URL}/signin`, {
         method: 'POST',
         headers: {
