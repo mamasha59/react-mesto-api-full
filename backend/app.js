@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const { errors } = require('celebrate');
+const cors = require('cors');
 const userRoutes = require('./routes/users');
 const cardRoutes = require('./routes/cards');
 const { createUser, login } = require('./controllers/users');
@@ -29,6 +30,8 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use(requestLogger); // подключаем логгер запросов
+
+app.use(cors());
 
 app.get('/crash-test', () => { // ---краш тест
   setTimeout(() => {
