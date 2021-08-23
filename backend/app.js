@@ -1,10 +1,10 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const { errors } = require('celebrate');
-const cors = require('cors');
 const userRoutes = require('./routes/users');
 const cardRoutes = require('./routes/cards');
 const { createUser, login } = require('./controllers/users');
@@ -23,7 +23,26 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 const { PORT = 3000 } = process.env;
 const app = express();
 
+const options = {
+  origin: [
+    'http://localhost:3000',
+    'https://future.bright.nomoredomains.club',
+    'http://future.bright.nomoredomains.club',
+    'https://api.future.bright.nomoredomains.club',
+    'http://api.future.bright.nomoredomains.club',
+    'https://github.com/mamasha59/react-mesto-api-full',
+
+  ],
+  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
+  preflightContinue: false,
+  optionsSuccessStatus: 204,
+  allowedHeaders: ['Content-Type', 'origin', 'Authorization'],
+  credentials: true,
+};
+
 app.use(cors());
+
+app.use('*', cors(options));
 
 app.use(helmet());
 
@@ -32,7 +51,6 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use(requestLogger); // подключаем логгер запросов
-
 
 app.use((req, res, next) => {
   res.append('Access-Control-Allow-Origin', ['*']);
