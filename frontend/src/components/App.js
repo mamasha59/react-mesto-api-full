@@ -16,7 +16,7 @@ function App() {
   function signOut() { //---выход
     localStorage.removeItem('jwt');
     setLoggedIn(false);
-    history.push('/sign-in');
+    history.push('/signin');
   }
 
   function tokenCheck() {        // проверим токен
@@ -35,6 +35,7 @@ function App() {
   }
   React.useEffect(() => {
     tokenCheck();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loggedIn]);
 
   function handleRegistration(password, email) {//----- регистрация 
@@ -42,7 +43,7 @@ function App() {
       .then((data) => {
         if (data) {
           setTooltip(!tooltip)
-          history.push('/sign-in');
+          history.push('/signin');
         }
       })
       .catch(err => {
@@ -91,7 +92,7 @@ function App() {
         </Route>
 
         <Route exact path="/">          {/* --перенаправлени пользователя*/}
-          {loggedIn ? <Redirect to="/profile" /> : <Redirect to="/sign-in" />}
+          {loggedIn ? <Redirect to="/profile" /> : <Redirect to="/signin" />}
         </Route>
       </Switch>
 
