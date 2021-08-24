@@ -10,7 +10,6 @@ const handleOriginalResponse = (response) => {
 }
 
 export const register = (password, email) => {
-    console.log(JSON.stringify({"password":password, "email":email}))
     return fetch(`${BASE_URL}/signup`, {
         method: 'POST',
         credentials: 'include',

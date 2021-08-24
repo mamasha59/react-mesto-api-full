@@ -98,5 +98,8 @@ class Api{
 }
 const api = new Api({
     url: 'https://api.future.bright.nomoredomains.club',
+	headers: {
+		'Content-Type': 'application/json'
+	  }
 });
 export default api;
