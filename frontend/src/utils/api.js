@@ -90,6 +90,6 @@ class Api{
 	}
 }
 const api = new Api({
-    url: 'https:/api.future.bright.nomoredomains.club/',
+    url: 'https:/api.future.bright.nomoredomains.club',
 });
 export default api;
