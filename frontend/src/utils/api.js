@@ -90,10 +90,6 @@ class Api{
 	}
 }
 const api = new Api({
-    url: 'https:/api.future.bright.nomoredomains.club',
-    headers: {
-        authorization: 'a7c83460-3094-477b-9fb5-f7c43e4b79fa',
-        'Content-Type': 'application/json'
-    }
+    url: 'https:/api.future.bright.nomoredomains.club/',
 });
 export default api;
