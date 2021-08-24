@@ -13,7 +13,8 @@ class Api{
 	getCards() { //----получение карточек с сервера
 		return fetch(this._url + 'cards', {
 			method: 'GET',
-			headers: this._headers
+			headers: this._headers,
+			credentials: 'include',
 		})
 		.then(res => {
 			return this._checkOk(res)
@@ -26,6 +27,7 @@ class Api{
 		return fetch(this._url + 'cards', {
 			method: 'POST',
 			headers: this._headers,
+			credentials: 'include',
 			body: JSON.stringify({
 				name: data.name,
 				link: data.link,
@@ -38,7 +40,8 @@ class Api{
 	getUserInfo() { //----получение информации о пользователе
 		return fetch(this._url + 'users/me', {
 			method: 'GET',
-			headers: this._headers
+			headers: this._headers,
+			credentials: 'include',
 		})
 		.then(res => {
 			return this._checkOk(res)
@@ -48,6 +51,7 @@ class Api{
 		return fetch(this._url + 'users/me', {
 			method: 'PATCH',
 			headers: this._headers,
+			credentials: 'include',
 			body: JSON.stringify({
                 name: data.name,
                 about: data.about
@@ -61,6 +65,7 @@ class Api{
 		return fetch(this._url + 'users/me/avatar', {
 			method: 'PATCH',
 			headers: this._headers,
+			credentials: 'include',
 			body: JSON.stringify({
 				avatar: avatar.avatar
 			})
@@ -72,7 +77,8 @@ class Api{
 	deleteCard(cardId) {//---- удаление карточки  пользователя
 		return fetch(this._url + `cards/${cardId}`, {
 			method: 'DELETE',
-			headers: this._headers
+			headers: this._headers,
+			credentials: 'include',
 		})
 		.then(res => {
 			return this._checkOk(res)
@@ -82,7 +88,8 @@ class Api{
 	changeLikeCardStatus(cardId, isLiked) {//----- удаление лайка с карточки changeLikeCardStatus
 		return fetch(this._url + `cards/likes/${cardId}`, {
 			method: isLiked ? 'PUT' : 'DELETE',
-			headers: this._headers
+			headers: this._headers,
+			credentials: 'include',
 		})
 		.then(res => {
 			return this._checkOk(res)
