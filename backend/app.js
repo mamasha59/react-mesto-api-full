@@ -23,24 +23,26 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 const { PORT = 3000 } = process.env;
 const app = express();
 
-const options = {
-  origin: [
-    'http://localhost:3000',
-    'https://future.bright.nomoredomains.club',
-    'http://future.bright.nomoredomains.club',
-    'https://api.future.bright.nomoredomains.club',
-    'http://api.future.bright.nomoredomains.club',
-    'https://github.com/mamasha59/react-mesto-api-full',
-
-  ],
-  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
-  preflightContinue: false,
-  optionsSuccessStatus: 204,
-  allowedHeaders: ['Content-Type', 'origin', 'Authorization'],
+const options = [
+  'http://localhost:3000',
+  'https://future.bright.nomoredomains.club',
+  'http://future.bright.nomoredomains.club',
+  'https://api.future.bright.nomoredomains.club',
+  'http://api.future.bright.nomoredomains.club',
+  'https://github.com/mamasha59/react-mesto-api-full',
+];
+const corsOption = {
   credentials: true,
+  origin: function checkCorsList(origin, callback) {
+    if (options.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
 };
 
-app.use(cors(options));
+app.use(cors(corsOption));
 
 app.use(helmet());
 
