@@ -13,36 +13,27 @@ const { validationSignin, validationSignUp } = require('./middlewares/serverVali
 const NotFoundError = require('./errors/not-found');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
-mongoose.connect('mongodb://localhost:27017/mestodb', {
-  useNewUrlParser: true,
-  useCreateIndex: true,
-  useFindAndModify: false,
-  useUnifiedTopology: true,
-});
+const options = {
+  origin: [
+    'http://localhost:3000',
+    'https://future.bright.nomoredomains.club',
+    'http://future.bright.nomoredomains.club',
+    'https://api.future.bright.nomoredomains.club',
+    'http://api.future.bright.nomoredomains.club',
+    'https://github.com/mamasha59/react-mesto-api-full',
+
+  ],
+  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
+  preflightContinue: false,
+  optionsSuccessStatus: 204,
+  allowedHeaders: ['Content-Type', 'origin', 'Authorization'],
+  credentials: true,
+};
 
 const { PORT = 3000 } = process.env;
 const app = express();
 
-const options = [
-  'http://localhost:3000',
-  'https://future.bright.nomoredomains.club',
-  'http://future.bright.nomoredomains.club',
-  'https://api.future.bright.nomoredomains.club',
-  'http://api.future.bright.nomoredomains.club',
-  'https://github.com/mamasha59/react-mesto-api-full',
-];
-const corsOption = {
-  credentials: true,
-  origin: function checkCorsList(origin, callback) {
-    if (options.indexOf(origin) !== -1 || !origin) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-};
-
-app.use(cors(corsOption));
+app.use('*', cors(options));
 
 app.use(helmet());
 
@@ -52,11 +43,11 @@ app.use(cookieParser());
 
 app.use(requestLogger); // подключаем логгер запросов
 
-app.use((req, res, next) => {
-  res.append('Access-Control-Allow-Origin', ['*']);
-  res.append('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-  res.append('Access-Control-Allow-Headers', 'Content-Type');
-  next();
+mongoose.connect('mongodb://localhost:27017/mestodb', {
+  useNewUrlParser: true,
+  useCreateIndex: true,
+  useFindAndModify: false,
+  useUnifiedTopology: true,
 });
 
 app.get('/crash-test', () => { // ---краш тест
