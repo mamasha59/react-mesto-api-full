@@ -40,12 +40,11 @@ const options = {
   credentials: true,
 };
 
-app.use('*', cors(options));
+app.use(cors(options));
 
 app.use(helmet());
 
 app.use(express.json());
-
 
 app.use(cookieParser());
 
