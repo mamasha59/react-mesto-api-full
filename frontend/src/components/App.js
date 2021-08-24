@@ -16,7 +16,7 @@ function App() {
   function signOut() { //---выход
     localStorage.removeItem('jwt');
     setLoggedIn(false);
-    history.push('/sign-in');
+    history.push('/signin');
   }
 
   function tokenCheck() {        // проверим токен
@@ -42,7 +42,7 @@ function App() {
       .then((data) => {
         if (data) {
           setTooltip(!tooltip)
-          history.push('/sign-in');
+          history.push('/signin');
         }
       })
       .catch(err => {
@@ -82,16 +82,16 @@ function App() {
           email={email}>
         </ProtectedRoute>
 
-        <Route path="/sign-up">         {/* ---регистрация*/}
+        <Route path="/signup">         {/* ---регистрация*/}
           <Register onRegister={handleRegistration} />
         </Route>
 
-        <Route path="/sign-in" >        {/*---авторизация*/}
+        <Route path="/signin" >        {/*---авторизация*/}
           <Login onEnter={handleEnterUser} />
         </Route>
 
         <Route exact path="/">          {/* --перенаправлени пользователя*/}
-          {loggedIn ? <Redirect to="/profile" /> : <Redirect to="/sign-in" />}
+          {loggedIn ? <Redirect to="/profile" /> : <Redirect to="/signin" />}
         </Route>
       </Switch>
 
