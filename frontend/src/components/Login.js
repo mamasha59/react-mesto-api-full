@@ -12,7 +12,7 @@ function Login(props) {
     return (
         <>
             <Header>
-                <Link to="/sign-up" className="header__link">Регистрация</Link>
+                <Link to="/signup" className="header__link">Регистрация</Link>
             </Header>
             <main>
                 <div className="login">

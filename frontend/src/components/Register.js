@@ -13,7 +13,7 @@ function Register(props) {
     return (
         <div>
           <Header>
-          <Link to="/sign-in" className="header__link">Войти</Link>
+          <Link to="/signin" className="header__link">Войти</Link>
           </Header>
             <main>
                 <div className="register">
@@ -27,7 +27,7 @@ function Register(props) {
                         <div className="register__button-container">
                             <button type="submit" className="register__link">Зарегистрироваться</button>
                             <p className='register__question'>Уже зарегистрированы?
-                                <Link to="/sign-in" className='register__enter' >Войти</Link>
+                                <Link to="/signin" className='register__enter' >Войти</Link>
                             </p>
                         </div>
                     </form>
