@@ -31,7 +31,14 @@ function Main(props) {
 
     <section className="elements">
       {cards.map((el, index) => (
-        <Card key={index} card={el} onCardClick={onCardClick} onCardLike={onCardLike} onApproveDelition={onApproveDelition} onPickDeletedCard={onPickDeletedCard} />
+        <Card 
+        key={index} 
+        card={el} 
+        onCardClick={onCardClick} 
+        onCardLike={onCardLike} 
+        onApproveDelition={onApproveDelition} 
+        onPickDeletedCard={onPickDeletedCard} 
+        />
       ))}
     </section>
   </main>
