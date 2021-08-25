@@ -30,7 +30,7 @@ function Main(props) {
     </section>
 
     <section className="elements">
-      {cards.map((card) => (
+      {Object.keys(cards).map((card) => (
         <Card 
         key={card._id} 
         card={card} 
@@ -44,5 +44,4 @@ function Main(props) {
   </main>
   );
 }
-
 export default Main;
