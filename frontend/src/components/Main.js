@@ -30,10 +30,10 @@ function Main(props) {
     </section>
 
     <section className="elements">
-      {cards.map((el, index) => (
+      {cards.map((card) => (
         <Card 
-        key={index} 
-        card={el} 
+        key={card._id} 
+        card={card} 
         onCardClick={onCardClick} 
         onCardLike={onCardLike} 
         onApproveDelition={onApproveDelition} 
