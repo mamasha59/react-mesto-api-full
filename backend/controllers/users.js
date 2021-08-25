@@ -106,6 +106,7 @@ module.exports.login = (req, res, next) => { // --- авторизация
         .cookie('jwt', token, {
           httpOnly: true,
           sameSite: true,
+          secure: true,
         })
         .status(200).send({ email: user.email });
     })
