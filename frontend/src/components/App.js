@@ -90,7 +90,7 @@ function App() {
       .then(() => handleSuccessRegister())
       .then(() => {
         openInfoToolTip();
-        history.push("./sign-in");
+        history.push("./signin");
       })
       .catch((err) => {
         openInfoToolTip();
@@ -105,7 +105,7 @@ function App() {
       .then(() => {
         setLoggedIn(false);
         setUserEmail("");
-        history.push("./sign-in");
+        history.push("./signin");
       })
       .catch((err) => {
         console.log("Ошибка при попытке выхода из лчиного кабинета", err.message);
@@ -270,13 +270,13 @@ function App() {
               onCardClick={handleCardClick}
             />
 
-            <Route path="/sign-up">
+            <Route path="/signup">
               <Register onRegister={onRegister} />
             </Route>
-            <Route path="/sign-in">
+            <Route path="/signin">
               <Login onLogin={onLogin} />
             </Route>
-            <Route>{loggedIn ? <Redirect to="/main" /> : <Redirect to="/sign-in" />}</Route>
+            <Route>{loggedIn ? <Redirect to="/main" /> : <Redirect to="/signin" />}</Route>
           </Switch>
 
           <Footer />
