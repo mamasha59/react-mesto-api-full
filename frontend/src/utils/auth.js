@@ -1,47 +1,53 @@
-export const BASE_URL = 'https://api.future.bright.nomoredomains.club';
+import { options } from "../utils/utils";
 
-const handleOriginalResponse = (response) => {
-    if (response.ok){
-        return (response.json());
-    } else {
-        console.log('Ошибка');
-        return Promise.reject(new Error(`${response.status}`));
+class AuthApi {
+  constructor(config) {
+    this._baseUrl = config.url;
+    this._headers = config.headers;
+  }
+
+  _handlePromise(res) {
+    if (res.ok) {
+      return res.json();
     }
+
+    return Promise.reject(new Error(`Ошибка ${res.status}`));
+  }
+
+  register(data) {
+    return fetch(`${this._baseUrl}/signup`, {
+      method: "POST",
+      headers: this._headers,
+      credentials: 'include',
+      body: JSON.stringify({
+        password: data.password,
+        email: data.email,
+      }),
+    }).then((res) => this._handlePromise(res));
+  }
+
+  login(data) {
+    return fetch(`${this._baseUrl}/signin`, {
+      method: "POST",
+      headers: this._headers,
+      credentials: 'include',
+      body: JSON.stringify({
+        password: data.password,
+        email: data.email,
+      }),
+    }).then((res) => this._handlePromise(res));
+  }
+
+  logout() {
+    return fetch(`${this._baseUrl}/signout`, {
+      method: "POST",
+      headers: this._headers,
+      credentials: 'include',
+    }).then((res) => this._handlePromise(res));
+  }
 }
 
-export const register = (password, email) => {
-    return fetch(`${BASE_URL}/signup`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-            'Accept': "application/json",
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({"password":password, "email":email})
-    })
-        .then(handleOriginalResponse)
-};
+// Создание экземпляра класса AuthApi
+const auth = new AuthApi(options);
 
-export const logIn = (password, email) => {
-    return fetch(`${BASE_URL}/signin`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-            'Accept': "application/json",
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({"password":password, "email":email})
-    })
-        .then(handleOriginalResponse)};
-
-export const getToken = (token) => {
-    return fetch(`${BASE_URL}/users/me`, {
-        method: 'GET',
-        credentials: 'include',
-        headers: {
-            'Accept': "application/json",
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        }
-    })
-        .then(handleOriginalResponse)};
+export default auth;

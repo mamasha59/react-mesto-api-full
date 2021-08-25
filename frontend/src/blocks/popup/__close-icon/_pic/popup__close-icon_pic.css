@@ -1,0 +1,10 @@
+.popup__close-icon_pic {
+  align-self: flex-start;
+  width: 100%;
+}
+
+@media all and (min-width: 768px) {
+  .popup__close-icon_pic {
+    width: calc(100% + 44px);
+  }
+}

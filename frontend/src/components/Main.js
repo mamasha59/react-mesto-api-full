@@ -1,39 +1,40 @@
 import React from 'react';
-import { CurrentUserContext } from "../contexts/CurrentUserContext";
-import Card from './Card'
 
-function Main({ onEditAvatar, onEditProfile, onAddPlace, onCardClick,cards,onCardLike, onCardDelete}) {
-  const currentUser = React.useContext(CurrentUserContext);
+import editImagePath from '../images/pen.svg';
+import addButtonPath from '../images/add_button.svg';
+import Card from './Card';
 
-  return (
+import CurrentUserContext from '../contexts/CurrentUserContext';
+
+function Main(props) {
+    const { cards, onCardLike, onApproveDelition, onPickDeletedCard, onEditAvatar, onEditProfile, onAddPlace, onCardClick } = props;
+    const currentUser = React.useContext(CurrentUserContext);
+
+    return(
     <main className="content">
-      <section className="profile">
-        <div className="profile__block">
-          <button style={{ backgroundImage: `url(${currentUser.avatar})` }} className="profile__edit-button" onClick={onEditAvatar}>
-          </button>
-          <div className="profile__text">
-            <div className="profile__title-button">
-              <h1 className="profile__title">{currentUser.name}</h1>
-              <button aria-label="редактировать" type="button" className="profile__link" onClick={onEditProfile} />
-            </div>
-            <p className="profile__subtitle">{currentUser.about}</p>
-          </div>
+    <section className="profile">
+      <div className="profile__avatar" onClick={onEditAvatar}>
+        <img src={currentUser.avatar} alt="Фотография профиля" className="profile__photo" />
+        <div className="profile__shadow">
+          <img src={editImagePath} alt="Перо" className="profile__edit-image" />
         </div>
-        <button aria-label="добавить" type="button" className="profile__add" onClick={onAddPlace} />
-      </section>
-      <section className="elements">
-          {cards.map((card) => (
-            <Card
-              card={card}
-              onCardClick={onCardClick}
-              onCardLike={onCardLike}
-              onCardDelete={onCardDelete}
-              key={card._id}
-            />
-          )
-          )}
-      </section>
-    </main>
+      </div>
+      <div className="profile__info">
+        <div className="profile__edition">
+          <h1 className="profile__title">{currentUser.name}</h1>
+          <button type="button" name="editButton" className="profile__button profile__button_edit" onClick={onEditProfile}></button>
+        </div>
+        <p className="profile__subtitle">{currentUser.about}</p>
+      </div>
+      <button type="button" name="addButton" className="profile__button profile__button_add" onClick={onAddPlace}><img src={addButtonPath} alt="Кнопка добавления" className="profile__icon" /></button>
+    </section>
+
+    <section className="elements">
+      {cards.map((el, index) => (
+        <Card key={index} card={el} onCardClick={onCardClick} onCardLike={onCardLike} onApproveDelition={onApproveDelition} onPickDeletedCard={onPickDeletedCard} />
+      ))}
+    </section>
+  </main>
   );
 }
 

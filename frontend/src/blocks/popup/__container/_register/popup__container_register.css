@@ -1,0 +1,18 @@
+.popup__container_register {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+@media all and (min-width: 320px) {
+  .popup__container_register {
+    padding: 50px 18px;
+  }
+}
+
+@media all and (min-width: 768px) {
+  .popup__container_register {
+    padding: 60px 36px;
+  }
+}

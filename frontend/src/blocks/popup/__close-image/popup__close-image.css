@@ -1,0 +1,17 @@
+.popup__close-image {
+  padding: 0;
+}
+
+@media all and (min-width: 320px) {
+  .popup__close-image {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+@media all and (min-width: 768px) {
+  .popup__close-image {
+    width: 44px;
+    height: 44px;
+  }
+}

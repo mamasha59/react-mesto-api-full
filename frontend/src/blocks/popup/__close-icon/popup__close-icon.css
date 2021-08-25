@@ -1,0 +1,33 @@
+.popup__close-icon {
+  opacity: 1;
+  transition: opacity 0.2s ease-in-out 0.2s;
+  padding: 0;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  background-color: transparent;
+  border: none;
+}
+
+.popup__close-icon:hover {
+  opacity: 0.6;
+  cursor: pointer;
+}
+
+.popup__close-icon:focus {
+  outline: none;
+}
+
+@media all and (min-width: 320px) {
+  .popup__close-icon {
+    width: 282px;
+    height: 37px;
+  }
+}
+
+@media all and (min-width: 768px) {
+  .popup__close-icon {
+    width: calc(430px + 80px);
+    height: 52px;
+  }
+}

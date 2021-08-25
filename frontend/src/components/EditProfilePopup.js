@@ -1,61 +1,126 @@
-import React from 'react';
-import PopupWithForm from "./PopupWithForm";
-import { CurrentUserContext } from "../contexts/CurrentUserContext";
+import React from "react";
 
-function EditProfilePopup({ isOpen, onClose, onUpdateUser,button }) {
+import PopupWithForm from "./PopupWithForm";
+
+import CurrentUserContext from "../contexts/CurrentUserContext";
+
+function EditProfilePopup(props) {
+  const { isOpen, onClose, onUpdateUser } = props;
   const currentUser = React.useContext(CurrentUserContext);
-  const [name, setName] = React.useState(currentUser.name);
-  const [description, setDescription] = React.useState(currentUser.about);
+
+  const [name, setName] = React.useState("");
+  const [description, setDescription] = React.useState("");
+  const [isNameValid, setIsNameValid] = React.useState(true);
+  const [isAboutValid, setIsAboutValid] = React.useState(true);
+  const [nameError, setNameError] = React.useState("");
+  const [aboutError, setAboutError] = React.useState("");
+
+  const [buttonText, setButtonText] = React.useState("Сохранить");
+  const [isFormValid, setIsFormValid] = React.useState(false);
 
   React.useEffect(() => {
     setName(currentUser.name);
     setDescription(currentUser.about);
-  }, [currentUser,isOpen]);
+  }, [currentUser, isOpen]);
 
+  React.useEffect(() => {
+    resetButtonText();
+  }, [isOpen]);
+
+  // Функции для передачи данных стейт-переменным
+  function handleNameChange(e) {
+    setName(e.target.value);
+    setIsNameValid(e.target.validity.valid);
+    if (!e.target.validity.valid) {
+      setNameError(e.target.validationMessage);
+      setIsFormValid(false);
+    } else if (description && isAboutValid) {
+      setIsFormValid(true);
+    }
+  }
+
+  function handleDescriptionChange(e) {
+    setDescription(e.target.value);
+    setIsAboutValid(e.target.validity.valid);
+    if (!e.target.validity.valid) {
+      setAboutError(e.target.validationMessage);
+      setIsFormValid(false);
+    } else if (name && isNameValid) {
+      setIsFormValid(true);
+    }
+  }
+
+  // Функции для изменения текста на кнопке отправки
+  function changeButtonText() {
+    setButtonText("Сохранение...");
+  }
+
+  function resetButtonText() {
+    setButtonText("Сохранить");
+  }
+
+  // Обработчик отправки данных
   function handleSubmit(e) {
     e.preventDefault();
+    changeButtonText();
+    setIsFormValid(false);
+
     onUpdateUser({
-      name,
-      about: description,
+      userName: name,
+      userJob: description,
     });
   }
-  function handleChangeName(e) {
-    setName(e.target.value);
-  }
 
-  function handleChangeAbout(e) {
-    setDescription(e.target.value);
+  // Функция для закрытия окна
+  function closePopup() {
+    onClose();
+    setName(currentUser.name);
+    setDescription(currentUser.about);
+    setIsNameValid(true);
+    setIsAboutValid(true);
+    setIsFormValid(false);
   }
 
   return (
     <PopupWithForm
       isOpen={isOpen}
-      onClose={onClose}
-      onSubmit={handleSubmit}
-      name="edit-profile"
+      name="edition"
+      onClose={closePopup}
       title="Редактировать профиль"
-      button={"Сохранить"}>
-        
+      buttonText={buttonText}
+      onSubmit={handleSubmit}
+      isFormValid={isFormValid}>
       <input
-        className="popup__input popup__input_user-name"
-        placeholder="Имя"
+        id="name-input"
+        value={name || ""}
+        onChange={handleNameChange}
+        required
         type="text"
-        name="name"
-        value={name || ''}
-        onChange={handleChangeName}
-        id="popup__name"
-        minLength="2" maxLength="40" required />
-      <span className="popup__error popup__name-error" />
+        name="userName"
+        placeholder="Имя пользователя"
+        minLength="2"
+        maxLength="40"
+        className={`popup__text ${isNameValid === false && "popup__text_type_error"}`}
+      />
+      <span className={`popup__text-error ${isNameValid === false && "popup__text-error_visible"}`}>
+        {nameError}
+      </span>
       <input
-        className="popup__input popup__input_user-profession"
-        placeholder="Род занятий"
+        id="job-input"
+        value={description || ""}
+        onChange={handleDescriptionChange}
+        required
         type="text"
-        name="about"
-        value={description || ''}
-        onChange={handleChangeAbout}
-        id="popup__about"
-        minLength="2" maxLength="200" required />
-      <span className="popup__error popup__about-error" />
+        name="userJob"
+        placeholder="Профессия пользователя"
+        minLength="2"
+        maxLength="200"
+        className={`popup__text ${isAboutValid === false && "popup__text_type_error"}`}
+      />
+      <span
+        className={`popup__text-error ${isAboutValid === false && "popup__text-error_visible"}`}>
+        {aboutError}
+      </span>
     </PopupWithForm>
   );
 }

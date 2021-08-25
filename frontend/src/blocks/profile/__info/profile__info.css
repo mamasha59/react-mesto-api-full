@@ -1,0 +1,17 @@
+.profile__info {
+  display: flex;
+  flex-direction: column;
+}
+
+@media all and (min-width: 320px) {
+  .profile__info {
+    margin-top: 26px;
+  }
+}
+
+@media all and (min-width: 768px) {
+  .profile__info {
+    margin-top: 0;
+    width: calc(100% - 150px - 120px - 30px);
+  }
+}

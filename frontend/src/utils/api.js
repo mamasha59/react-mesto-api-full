@@ -1,105 +1,94 @@
-class Api{
-	constructor(selector) {
-		this._url = selector.url;
-		this._headers = selector.headers;
-	}
-	_checkOk(res) {
-		if(res.ok) {
-			return res.json();
-		} 
-			return Promise.reject(new Error(`${res.status}`));
-		}
-	
-	getCards() { //----получение карточек с сервера
-		return fetch(this._url + 'cards', {
-			method: 'GET',
-			headers: this._headers,
-			credentials: 'include',
-		})
-		.then(res => {
-			return this._checkOk(res)
-		})
-	}
-	getInitialData() {
-        return Promise.all([this.getUserInfo(), this.getCards()]);
-    }
-	postCards(data) { //---- добавление карточек в dom
-		return fetch(this._url + 'cards', {
-			method: 'POST',
-			headers: this._headers,
-			credentials: 'include',
-			body: JSON.stringify({
-				name: data.name,
-				link: data.link,
-			})
-		})
-		.then(res => {
-			return this._checkOk(res)
-		})
-	}
-	getUserInfo() { //----получение информации о пользователе
-		return fetch(this._url + 'users/me', {
-			method: 'GET',
-			headers: this._headers,
-			credentials: 'include',
-		})
-		.then(res => {
-			return this._checkOk(res)
-		})
-	}
-	setUserInfo(data) {//---- установка инфы о пользователе
-		return fetch(this._url + 'users/me', {
-			method: 'PATCH',
-			headers: this._headers,
-			credentials: 'include',
-			body: JSON.stringify({
-                name: data.name,
-                about: data.about
-			})
-		})
-		.then(res => {
-			return this._checkOk(res)
-		})
-	}
-	updateAvatar(avatar) {//----- размещение аватара пользователя updateAvatar
-		return fetch(this._url + 'users/me/avatar', {
-			method: 'PATCH',
-			headers: this._headers,
-			credentials: 'include',
-			body: JSON.stringify({
-				avatar: avatar.avatar
-			})
-		})
-		.then(res => {
-			return this._checkOk(res)
-		})
-	}
-	deleteCard(cardId) {//---- удаление карточки  пользователя
-		return fetch(this._url + `cards/${cardId}`, {
-			method: 'DELETE',
-			headers: this._headers,
-			credentials: 'include',
-		})
-		.then(res => {
-			return this._checkOk(res)
-		})
-	}
+import { options } from "./utils";
 
-	changeLikeCardStatus(cardId, isLiked) {//----- удаление лайка с карточки changeLikeCardStatus
-		return fetch(this._url + `cards/likes/${cardId}`, {
-			method: isLiked ? 'PUT' : 'DELETE',
-			headers: this._headers,
-			credentials: 'include',
-		})
-		.then(res => {
-			return this._checkOk(res)
-		})
-	}
+class Api {
+  constructor(config) {
+    this._baseUrl = config.url;
+    this._headers = config.headers;
+  }
+
+  _handlePromise(res) {
+    if (res.ok) {
+      return res.json();
+    }
+
+    return Promise.reject(new Error(`Ошибка ${res.status}`));
+  }
+
+  getUserInfo() {
+    return fetch(`${this._baseUrl}/users/me`, {
+      headers: this._headers,
+      credentials: 'include',
+    }).then((res) => this._handlePromise(res));
+  }
+
+  editUserInfo(data) {
+    return fetch(`${this._baseUrl}/users/me`, {
+      method: "PATCH",
+      headers: this._headers,
+      credentials: 'include',
+      body: JSON.stringify({
+        name: data.userName,
+        about: data.userJob,
+      }),
+    }).then((res) => this._handlePromise(res));
+  }
+
+  changeUserAvatar(data) {
+    return fetch(`${this._baseUrl}/users/me/avatar`, {
+      method: "PATCH",
+      headers: this._headers,
+      credentials: 'include',
+      body: JSON.stringify({
+        avatar: data.avatar,
+      }),
+    }).then((res) => this._handlePromise(res));
+  }
+
+  getInitialCards() {
+    return fetch(`${this._baseUrl}/cards`, {
+      headers: this._headers,
+      credentials: 'include',
+    }).then((res) => this._handlePromise(res));
+  }
+
+  addNewCard(data) {
+    return fetch(`${this._baseUrl}/cards`, {
+      method: "POST",
+      headers: this._headers,
+      credentials: 'include',
+      body: JSON.stringify({
+        name: data.name,
+        link: data.link,
+      }),
+    }).then((res) => this._handlePromise(res));
+  }
+
+  deleteCard(id) {
+    return fetch(`${this._baseUrl}/cards/${id}`, {
+      method: "DELETE",
+      headers: this._headers,
+      credentials: 'include',
+    }).then((res) => this._handlePromise(res));
+  }
+
+  putLikeOnCard(id) {
+    return fetch(`${this._baseUrl}/cards/${id}/likes`, {
+      method: "PUT",
+      headers: this._headers,
+      credentials: 'include',
+    }).then((res) => this._handlePromise(res));
+  }
+
+  removeLikeFromCard(id) {
+    return fetch(`${this._baseUrl}/cards/${id}/likes`, {
+      method: "DELETE",
+      headers: this._headers,
+      credentials: 'include',
+    }).then((res) => this._handlePromise(res));
+  }
 }
-const api = new Api({
-    url: 'https://api.future.bright.nomoredomains.club',
-	headers: {
-		'Content-Type': 'application/json'
-	  }
-});
+
+// Создание экземпляра класса Api
+const api = new Api(options);
+
 export default api;

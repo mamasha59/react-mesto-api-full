@@ -1,40 +1,20 @@
-import React from 'react';
-import { withRouter,Link } from 'react-router-dom';
-import Header from './Header'
-function Register(props) {
-    const email = React.useRef();
-    const password = React.useRef();
+import React from "react";
+import { Link } from "react-router-dom";
 
-    function handleSubmit(e) {
-        e.preventDefault();
-        props.onRegister(email.current.value,password.current.value)
-       //console.log(password.current.value)
-    };      
-    return (
-        <div>
-          <Header>
-          <Link to="/signin" className="header__link">Войти</Link>
-          </Header>
-            <main>
-                <div className="register">
-                    <p className="register__title">Регистрация</p>
-                    <form className="register__form" onSubmit={handleSubmit}>
+import UserEntryForm from "./UserEntryForm";
 
-                        <input ref={email} className='register__input' id="userEmail" autocomplete="off" name="userEmail" type="email" placeholder={'Email'} required />
-
-                        <input ref={password} className='register__input' id="password" autocomplete="off" name="password" type="password" placeholder={'Пароль'} required/>
-
-                        <div className="register__button-container">
-                            <button type="submit" className="register__link">Зарегистрироваться</button>
-                            <p className='register__question'>Уже зарегистрированы?
-                                <Link to="/signin" className='register__enter' >Войти</Link>
-                            </p>
-                        </div>
-                    </form>
-                </div>
-            </main>
-        </div>
-    );
+function Register({ onRegister }) {
+  return (
+    <>
+      <UserEntryForm title="Регистрация" buttonText="Зарегистрироваться" onAuth={onRegister} />
+      <p className="user-entry__paragraph">
+        Уже зарегистрированы?&nbsp;
+        <Link to="/sign-in" className="user-entry__paragraph user-entry__paragraph_link">
+          Войти
+        </Link>
+      </p>
+    </>
+  );
 }
 
-export default withRouter(Register);
+export default Register;

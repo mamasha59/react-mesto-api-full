@@ -1,0 +1,28 @@
+.header__auth-link {
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 17px;
+  color: #ffffff;
+  margin: 0;
+  text-decoration: none;
+  opacity: 1;
+  transition: opacity 0.2s ease-in-out 0.2s;
+}
+
+.header__auth-link:hover {
+  opacity: 0.6;
+  cursor: pointer;
+}
+
+@media all and (max-width: 767px) {
+  .header__auth-link {
+    display: none;
+  }
+}
+
+@media all and (min-width: 768px) {
+  .header__auth-link {
+    font-size: 18px;
+    line-height: 22px;
+  }
+}
