@@ -25,7 +25,7 @@ function Card(props) {
   }
 
   return (
-    <div className="article">
+    <div className="article" key={card._id}>
       <img src={card.link} alt={card.name} onClick={handleClick} className="article__image" />
       {isOwn && <button type="button" name="deleteButton" className="article__delete-button article__delete-button_active" onClick={handleApproveDelete}></button>}
       <div className="article__bottom-part">
