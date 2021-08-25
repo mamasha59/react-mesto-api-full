@@ -20,9 +20,9 @@ function Register(props) {
                     <p className="register__title">Регистрация</p>
                     <form className="register__form" onSubmit={handleSubmit}>
 
-                        <input ref={email} className='register__input' id="userEmail" name="userEmail" type="email" placeholder={'Email'} required />
+                        <input ref={email} className='register__input' id="userEmail" autocomplete="off" name="userEmail" type="email" placeholder={'Email'} required />
 
-                        <input ref={password} className='register__input' id="password" name="password" type="password" placeholder={'Пароль'} required/>
+                        <input ref={password} className='register__input' id="password" autocomplete="off" name="password" type="password" placeholder={'Пароль'} required/>
 
                         <div className="register__button-container">
                             <button type="submit" className="register__link">Зарегистрироваться</button>

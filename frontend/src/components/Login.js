@@ -18,8 +18,8 @@ function Login(props) {
                 <div className="login">
                     <p className="login__welcome">Вход</p>
                     <form className="login__form" onSubmit={handleSubmit}>
-                        <input ref={emailInput} className='login__input login__input_email' id="email" required name="email" type="text" placeholder={'Email'} />
-                        <input ref={passwordInput} className='login__input login__input_password' id="password" required name="password" type="password" placeholder={'Пароль'} />
+                        <input ref={emailInput} className='login__input login__input_email' id="email" autocomplete="off" required name="email" type="text" placeholder={'Email'} />
+                        <input ref={passwordInput} className='login__input login__input_password' id="password" autocomplete="off" required name="password" type="password" placeholder={'Пароль'} />
                         <div className="login__button">
                             <button type="submit" className="login__link">Войти</button>
                         </div>
