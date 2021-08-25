@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 
-import logoPath from "../images/vector.svg";
+import vector from "../images/vector.svg";
 import headerMenu from "../images/header_menu.svg";
 import closeIcon from "../images/close_icon.svg";
 
@@ -35,7 +35,7 @@ function Header({ userEmail, onLogout }) {
         </div>
       )}
       <header className="header">
-        <img src={logoPath} alt="Лого" className="logo" />
+        <img src={vector} alt="Лого" className="logo" />
         {isMenuOpen ? (
           <img
             src={closeIcon}
