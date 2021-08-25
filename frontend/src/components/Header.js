@@ -35,7 +35,7 @@ function Header({ userEmail, onLogout }) {
         </div>
       )}
       <header className="header">
-        <img src={logoPath} alt="Логотип" className="logo" />
+        <img src={logoPath} alt="Лого" className="logo" />
         {isMenuOpen ? (
           <img
             src={closeIcon}
