@@ -222,7 +222,7 @@ function App() {
             <Register onRegister={onRegister} />
           </Route>
 
-          <Route>
+          <Route exact path="/">
             {loggedIn ? <Redirect to="/main" /> : <Redirect to="/signin" />}
           </Route>
         </Switch>
