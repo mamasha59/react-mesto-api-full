@@ -1,144 +1,99 @@
-import { apiPaths, apiHeaders } from '../utils/constants';
-
-/**
- * @class
- * @description Создает объект доступа к API
- * @param {object} parameters - объект с базовым URL и заголовками для API
- */
 class Api {
-  constructor(parameters) {
-    this._baseUrl = parameters.baseUrl;
-    this._headers = parameters.headers;
-    this._credentials = parameters.credentials;
-  }
-
-  /**
-   * @method
-   * @private
-   * @param {string} infoPath Дополнение к пути для разных запросов
-   * @param {string} method
-   * @param {string} body
-   */
-  async _fetchHandler(infoPath, method, body = null) {
-    const res = await fetch(`${this._baseUrl}${infoPath}`, {
-      method: method,
-      headers: this._headers,
-      body: body,
-      credentials: this._credentials,
-    });
-    if (res.ok) {
-      return res.json();
+    constructor(config) {
+        this._url = config.baseUrl;
+        this._headers = config.headers;
     }
-    const statusError = await res.json();
-    let message = statusError.message;
-    if (statusError.validation) {
-      message = statusError.validation.body.message;
+
+    _checkResponse(res) {
+        if (res.ok) {
+            return res.json();
+        }
+        return Promise.reject(`Ошибка: ${res.status}`);
     }
-    throw new Error(message);
-  }
 
-  /**
-   * @method
-   * @public
-   * @param {string} infoPath
-   */
-  getData(infoPath) {
-    return this._fetchHandler(infoPath);
-  }
+    getUserInfo() {
+        return fetch(`${this._url}/users/me`, {
+            method: 'GET',
+            'credentials': 'include',
+            headers: this._headers
+        })
+            .then(this._checkResponse);
+    }
 
-  /**
-   * @method
-   * @public
-   * @param {string} infoPath
-   * @param {string} name
-   * @param {string} about
-   */
-  setUserInfo(infoPath, { name, about }) {
-    return this._fetchHandler(
-      infoPath,
-      'PATCH',
-      JSON.stringify({
-        name,
-        about,
-      })
-    );
-  }
+    getInitialCards() {
+        return fetch(`${this._url}/cards`, {
+            method: 'GET',
+            'credentials': 'include',
+            headers: this._headers
+        })
+            .then(this._checkResponse);
+    }
 
-  /**
-   * @method
-   * @public
-   * @param {string} infoPath
-   * @param {string} name
-   * @param {string} link
-   */
-  uploadNewPicture(infoPath, { name, link }) {
-    return this._fetchHandler(
-      infoPath,
-      'POST',
-      JSON.stringify({
-        name,
-        link,
-      })
-    );
-  }
+    setUserInfo(formData) {
+        return fetch(`${this._url}/users/me`, {
+            method: 'PATCH',
+            'credentials': 'include',
+            headers: this._headers,
+            body: JSON.stringify({
+                name: formData.name,
+                about: formData.about
+            })
+        })
+            .then(this._checkResponse);
+    }
 
-  /**
-   * @method
-   * @public
-   * @param {string} infoPath
-   * @param {object} avatar URL аватара
-   */
-  uploadAvatar(infoPath, { avatar }) {
-    return this._fetchHandler(
-      infoPath,
-      'PATCH',
-      JSON.stringify({
-        avatar,
-      })
-    );
-  }
+    addCard(formData) {
+        return fetch(`${this._url}/cards`, {
+            method: 'POST',
+            'credentials': 'include',
+            headers: this._headers,
+            body: JSON.stringify({
+                name: formData.name,
+                link: formData.link
+            })
+        })
+            .then(this._checkResponse);
+    }
 
-  /**
-   * @method
-   * @public
-   * @param {string} infoPath
-   */
-  deleteData(infoPath) {
-    return this._fetchHandler(infoPath, 'DELETE');
-  }
+    removeCard(id) {
+        return fetch(`${this._url}/cards/${id}`, {
+            method: 'DELETE',
+            'credentials': 'include',
+            headers: this._headers
+        })
+            .then(this._checkResponse);
+    }
 
-  /**
-   * @method
-   * @public
-   * @param {string} infoPath
-   */
-  putData(infoPath) {
-    return this._fetchHandler(infoPath, 'PUT');
-  }
+    changeLikeCardStatus(cardId, isLiked) {
+        return fetch(`${this._url}/cards/${cardId}/likes/`, {
+            method: isLiked ? 'PUT' : 'DELETE',
+            'credentials': 'include',
+            headers: this._headers
+        })
+            .then(this._checkResponse);
+    }
 
-  auth(infoPath, { password, email }) {
-    return this._fetchHandler(
-      infoPath,
-      'POST',
-      JSON.stringify({
-        password,
-        email,
-      })
-    );
-  }
+    setUserAvatar(formData) {
+        return fetch(`${this._url}/users/me/avatar`, {
+            method: 'PATCH',
+            'credentials': 'include',
+            headers: this._headers,
+            body: JSON.stringify({
+                avatar: formData.avatar
+            })
+        })
+            .then(this._checkResponse);
+    }
+
 }
 
-/**
- * @constant
- * @description Базовый объект для работы с API
- * @type {object}
- * @param {string} baseUrl Базовый путь к серверу
- * @param {object} header Заголовки для запросов
- */
-const api = new Api({
-  baseUrl: apiPaths.BASE_URL,
-  headers: apiHeaders,
-  credentials: 'include',
+
+export const api = new Api({
+    baseUrl: 'https://api.future.bright.nomoredomains.club',
+    headers: {
+        'Content-Type': 'application/json'
+    }
 });
 
-export default api;
+
+

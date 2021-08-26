@@ -1,13 +1,11 @@
 .profile__info {
-  font-family: 'Inter', Arial, sans-serif;
-  margin-right: 17px;
-  min-width: 0;
-  max-width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
-@media all and (max-width: 768px) {
-  .profile__info {
-    text-align: center;
-    margin-right: 0;
-  }
+@media screen and (min-width: 1024px) {
+    .profile__info {
+        justify-content: flex-start;
+    }
 }

@@ -1,60 +1,50 @@
-import React, { useRef, useEffect, useState } from 'react';
-import useFormWithValidation from '../hooks/useForm';
 import PopupWithForm from './PopupWithForm';
+import { useRef, useState } from 'react';
 
-export default function EditAvatarPopup({ isOpen, onClose, onUpdateAvatar }) {
-  const avatarRef = useRef();
-  const [isLoading, setIsLoading] = useState(false);
 
-  const {
-    values,
-    handleChange,
-    errors,
-    isValid,
-    resetForm,
-  } = useFormWithValidation();
+function EditAvatarPopup(props) {
 
-  useEffect(() => {
-    resetForm();
-  }, [resetForm, isOpen]);
+    const [avatar, setAvatar] = useState('');
+    const avatarRef = useRef();
 
-  const handleSubmit = (evt) => {
-    evt.preventDefault();
-    setIsLoading(true);
-    onUpdateAvatar(avatarRef).finally(() => {
-      setIsLoading(false);
-    });
-  };
+    function handleAvatarChange(e) {
+        setAvatar(e.target.value);
+    }
 
-  return (
-    <PopupWithForm
-      title="Обновить аватар"
-      name="change-avatar"
-      buttonName={isLoading ? 'Сохранение...' : 'Сохранить'}
-      isOpen={isOpen}
-      isValid={isValid}
-      onClose={onClose}
-      onSubmit={handleSubmit}
-    >
-      <label className="form__item-container">
-        <input
-          ref={avatarRef}
-          id="avatar-link-input"
-          type="url"
-          name="link"
-          className="form__item"
-          placeholder="Ссылка на аватар"
-          onChange={handleChange}
-          value={values.link || ''}
-          required
-        />
-        <span
-          id="avatar-link-input-error"
-          className="form__input-error form__input-error_active"
+    function handleSubmit(e) {
+        e.preventDefault();
+
+        props.onUpdateAvatar({
+            avatar: avatarRef.current.value
+        });
+        setAvatar('');
+    }
+
+    return (
+        <PopupWithForm
+            isOpen={props.isOpen}
+            onClose={props.onClose}
+            name="popup-update-avatar"
+            title="Обновить аватар"
+            button="Сохранить"
+            onSubmit={handleSubmit}
         >
-          {errors.link || ''}
-        </span>
-      </label>
-    </PopupWithForm>
-  );
+            <label className="popup__label">
+                <input
+                    id="avatar__input"
+                    type="url"
+                    name="avatar"
+                    value={avatar}
+                    placeholder="Ссылка на аватар"
+                    className="popup__field popup__field_add popup__image-link popup__input"
+                    required
+                    ref={avatarRef}
+                    onChange={handleAvatarChange}
+                />
+                <span id="avatar__input-error"></span>
+            </label>
+        </PopupWithForm>
+    );
 }
+
+export default EditAvatarPopup;

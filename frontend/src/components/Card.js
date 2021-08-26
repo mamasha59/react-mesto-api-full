@@ -1,55 +1,57 @@
-import React, { useContext, useRef } from 'react';
+import React from 'react';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
-/** @param {string} trashButtonPath изображение для кнопки корзины */
-import trashButtonPath from '../images/button-trash.svg';
 
-function Card({ card, onCardDelete, onCardClick, onCardLike }) {
-  const currentUser = useContext(CurrentUserContext);
-  const isLiked = card.likes.some((el) => el === currentUser._id);
-  /** @param cardRef элемент DOM для плавного удаления */
-  const cardRef = useRef();
 
-  const handleDeleteClick = () => {
-    onCardDelete(card, cardRef);
-  };
+function Card(props) {
 
-  return (
-    <li ref={cardRef} className="elements__list-item">
-      <img
-        className="elements__image"
-        src={card.link}
-        alt={`Изображение ${card.name}`}
-        onClick={onCardClick.bind(null, card)}
-      />
-      {/** @description спрятать корзину если пользователь - не владелец карточки */}
-      {currentUser._id === card.owner && (
-        <img
-          className="button button_type_trash"
-          src={trashButtonPath}
-          alt="Удалить карточку"
-          onClick={handleDeleteClick}
-        />
-      )}
-      <div className="elements__text">
-        <h2 className="elements__title">{card.name}</h2>
-        <div className="elements__like-container">
-          <button
-            type="button"
-            className={`button button_type_like ${isLiked && 'button_liked'}`}
-            onClick={onCardLike.bind(null, card)}
-          ></button>
-          {/** @description спрятать счетчик, если нет лайков */}
-          <p
-            className={`elements__likes-counter ${
-              card.likes.length === 0 && 'elements__likes-counter_hidden'
-            }`}
-          >
-            {card.likes.length}
-          </p>
-        </div>
-      </div>
-    </li>
-  );
+    const currentUser = React.useContext(CurrentUserContext);
+    const isOwn = props.card.owner === currentUser._id;
+    const cardDeleteButtonClassName = isOwn ? 'cards__item-delete-button button' : 'cards__item-delete-button_hidden';
+    const isLiked = props.card.likes.some((likes) => likes === currentUser._id);
+    const cardLikeButtonClassName = isLiked
+        ? 'cards__item-like-icon-button_active button'
+        : 'cards__item-like-icon-button button';
+
+    function handleClick() {
+        props.onCardClick({ name: props.card.name, link: props.card.link });
+    }
+
+    function handleLikeClick() {
+        props.onCardLike(props.card);
+    }
+
+    function handleDeleteClick() {
+        props.onCardDelete(props.card);
+    }
+
+    return (
+        <li className="cards__item">
+            <img
+                className="cards__item-photo"
+                src={props.card.link}
+                onClick={handleClick}
+                alt={`Фото ${props.card.name}`}
+            />
+            <button
+                className={cardDeleteButtonClassName}
+                type="button"
+                aria-label="Удалить карточку"
+                onClick={handleDeleteClick}
+            />
+            <div className="cards__item-container">
+                <h2 className="cards__item-title">{props.card.name}</h2>
+                <div className="cards__like-container">
+                    <button
+                        className={cardLikeButtonClassName}
+                        type="button"
+                        aria-label="Лайкнуть карточку"
+                        onClick={handleLikeClick}
+                    />
+                    <p className="cards__item-likes">{props.card.likes.length}</p>
+                </div>
+            </div>
+        </li>
+    );
 }
 
 export default Card;
