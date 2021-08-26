@@ -1,9 +1,8 @@
-import React from "react";
+import React from 'react';
+import AuthForm from './AuthForm';
 
-import UserEntryForm from "./UserEntryForm";
-
-function Login({ onLogin }) {
-  return <UserEntryForm title="Вход" buttonText="Войти" onAuth={onLogin} />;
+function Login(props) {
+  return <AuthForm type="Вход" buttonName="Войти" {...props} />;
 }
 
 export default Login;

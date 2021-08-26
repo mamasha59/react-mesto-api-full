@@ -1,9 +1,0 @@
-@media all and (max-width: 767px) {
-  .header__auth-link_top-button {
-    display: block;
-    background: none;
-    border: none;
-    color: #a9a9a9;
-    margin-bottom: 40px;
-  }
-}

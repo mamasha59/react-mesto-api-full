@@ -1,92 +1,60 @@
-import React from "react";
+import React, { useRef, useEffect, useState } from 'react';
+import useFormWithValidation from '../hooks/useForm';
+import PopupWithForm from './PopupWithForm';
 
-import PopupWithForm from "./PopupWithForm";
+export default function EditAvatarPopup({ isOpen, onClose, onUpdateAvatar }) {
+  const avatarRef = useRef();
+  const [isLoading, setIsLoading] = useState(false);
 
-function EditAvatarPopup(props) {
-  const { isOpen, onClose, onUpdateAvatar } = props;
-  const [avatar, setAvatar] = React.useState("");
+  const {
+    values,
+    handleChange,
+    errors,
+    isValid,
+    resetForm,
+  } = useFormWithValidation();
 
-  const [buttonText, setButtonText] = React.useState("Сохранить");
-  const [avatarError, setAvatarError] = React.useState("");
-  const [isAvatarValid, setIsAvatarValid] = React.useState(true);
-  const [isFormValid, setIsFormValid] = React.useState(false);
+  useEffect(() => {
+    resetForm();
+  }, [resetForm, isOpen]);
 
-  React.useEffect(() => {
-    resetButtonText();
-    resetInput();
-  }, [isOpen]);
-
-  // Функции для изменения текста на кнопке отправки
-  function changeButtonText() {
-    setButtonText("Сохранение...");
-  }
-
-  function resetButtonText() {
-    setButtonText("Сохранить");
-  }
-
-  // Функция для сброса полей формы
-  function resetInput() {
-    setAvatar("");
-  }
-
-  // Функция для валидации полей формы
-  function handleAvatarInput(e) {
-    setAvatar(e.target.value);
-    setIsAvatarValid(e.target.validity.valid);
-    if (!e.target.validity.valid) {
-      setAvatarError(e.target.validationMessage);
-      setIsFormValid(false);
-    } else {
-      setIsFormValid(true);
-    }
-  }
-
-  // Обработчик отправки данных
-  function handleSubmit(e) {
-    e.preventDefault();
-    changeButtonText();
-    setIsFormValid(false);
-
-    onUpdateAvatar({
-      avatar: avatar,
+  const handleSubmit = (evt) => {
+    evt.preventDefault();
+    setIsLoading(true);
+    onUpdateAvatar(avatarRef).finally(() => {
+      setIsLoading(false);
     });
-  }
-
-  // Функция для закрытия окна
-  function closePopup() {
-    onClose();
-    resetInput();
-    setIsAvatarValid(true);
-    setIsFormValid(false);
-  }
+  };
 
   return (
     <PopupWithForm
-      isOpen={isOpen}
-      name="avatar"
-      onClose={closePopup}
       title="Обновить аватар"
-      buttonText={buttonText}
+      name="change-avatar"
+      buttonName={isLoading ? 'Сохранение...' : 'Сохранить'}
+      isOpen={isOpen}
+      isValid={isValid}
+      onClose={onClose}
       onSubmit={handleSubmit}
-      isFormValid={isFormValid}>
-      <input
-        id="avatar-input"
-        value={avatar || ""}
-        onInput={handleAvatarInput}
-        required
-        type="url"
-        name="avatar"
-        pattern="https?:\/\/(www\.)?([\w\-]{1,}\.)([\w\.~:\/\?#\[\]@!\$&'\(\)\*\+,;=\-]{2,})#?"
-        placeholder="Ссылка на изображение"
-        className={`popup__text ${isAvatarValid === false && "popup__text_type_error"}`}
-      />
-      <span
-        className={`popup__text-error ${isAvatarValid === false && "popup__text-error_visible"}`}>
-        {avatarError}
-      </span>
+    >
+      <label className="form__item-container">
+        <input
+          ref={avatarRef}
+          id="avatar-link-input"
+          type="url"
+          name="link"
+          className="form__item"
+          placeholder="Ссылка на аватар"
+          onChange={handleChange}
+          value={values.link || ''}
+          required
+        />
+        <span
+          id="avatar-link-input-error"
+          className="form__input-error form__input-error_active"
+        >
+          {errors.link || ''}
+        </span>
+      </label>
     </PopupWithForm>
   );
 }
-
-export default EditAvatarPopup;

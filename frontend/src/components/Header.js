@@ -1,76 +1,54 @@
-import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { useContext } from 'react';
+import { Route, Switch, Link } from 'react-router-dom';
+import { CurrentUserContext } from '../contexts/CurrentUserContext';
+import logoPath from '../images/logo.svg';
 
-//import vector from "../images/vector.svg";
-import headerMenu from "../images/header_menu.svg";
-import closeIcon from "../images/close_icon.svg";
+function Header({ isLoggedIn, isInfoOpened, setInfoOpened, onSignOut }) {
+  const handleClick = (evt) => {
+    setInfoOpened(!isInfoOpened);
+  };
 
-function Header({ userEmail, onLogout }) {
-  const location = useLocation();
-  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-
-  function handleMenuLogout() {
-    closeMenu();
-    onLogout();
-  }
-
-  function handleMenuClick() {
-    setIsMenuOpen(true);
-  }
-
-  function closeMenu() {
-    setIsMenuOpen(false);
-  }
+  const currentUser = useContext(CurrentUserContext);
 
   return (
-    <>
-      {isMenuOpen && (
-        <div className="header__top-part">
-          <p className="header__email header__email_top">{userEmail}</p>
-          <button
-            onClick={handleMenuLogout}
-            className="header__auth-link header__auth-link_top-button">
+    <header className="header">
+      <div className="header__container">
+        <img className="logo" src={logoPath} alt="Логотип Russia Mesto" />
+        {isLoggedIn ? (
+          <div
+            className={`hamburger${isInfoOpened ? ' hamburger_opened' : ''}`}
+            onClick={handleClick}
+          >
+            <div className="hamburger__bar"></div>
+          </div>
+        ) : (
+          <Switch>
+            <Route path="/signup">
+              <Link className="link header__link" to="/signin">
+                Войти
+              </Link>
+            </Route>
+            <Route path="*">
+              <Link className="link header__link" to="/signup">
+                Регистрация
+              </Link>
+            </Route>
+          </Switch>
+        )}
+      </div>
+      {isLoggedIn && (
+        <div
+          className={`header__info${
+            isInfoOpened ? ' header__info_opened' : ''
+          }`}
+        >
+          <p className="header__email">{currentUser.email}</p>
+          <Link className="link" onClick={onSignOut} to="#">
             Выйти
-          </button>
+          </Link>
         </div>
       )}
-      <header className="header">
-        <img className="logo" />
-        {isMenuOpen ? (
-          <img
-            src={closeIcon}
-            alt="Кнопка сворачивания меню"
-            onClick={closeMenu}
-            className="header__menu header__menu_close"
-          />
-        ) : (
-          <img
-            src={headerMenu}
-            alt="Кнопка развёртывания меню"
-            onClick={handleMenuClick}
-            className="header__menu"
-          />
-        )}
-        <div className="header__auth-box">
-          {userEmail && <p className="header__email">{userEmail}</p>}
-          {location.pathname === "/sign-up" && (
-            <Link to="/sign-in" className="header__auth-link">
-              Войти
-            </Link>
-          )}
-          {location.pathname === "/sign-in" && (
-            <Link to="/sign-up" className="header__auth-link">
-              Регистрация
-            </Link>
-          )}
-          {location.pathname === "/main" && (
-            <button onClick={onLogout} className="header__auth-link header__auth-link_button">
-              Выйти
-            </button>
-          )}
-        </div>
-      </header>
-    </>
+    </header>
   );
 }
 

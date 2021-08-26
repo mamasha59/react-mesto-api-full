@@ -1,13 +1,13 @@
 .header__email {
-  font-weight: 500;
-  font-size: 18px;
-  line-height: 22px;
-  color: #ffffff;
   margin: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  min-width: 0;
 }
 
-@media all and (max-width: 767px) {
+@media all and (max-width: 520px) {
   .header__email {
-    display: none;
+    margin: 0 27px 18px;
   }
 }

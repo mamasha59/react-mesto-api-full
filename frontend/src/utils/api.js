@@ -1,94 +1,144 @@
-import { options } from "./utils";
+import { apiPaths, apiHeaders } from '../utils/constants';
 
+/**
+ * @class
+ * @description Создает объект доступа к API
+ * @param {object} parameters - объект с базовым URL и заголовками для API
+ */
 class Api {
-  constructor(config) {
-    this._baseUrl = config.url;
-    this._headers = config.headers;
+  constructor(parameters) {
+    this._baseUrl = parameters.baseUrl;
+    this._headers = parameters.headers;
+    this._credentials = parameters.credentials;
   }
 
-  _handlePromise(res) {
+  /**
+   * @method
+   * @private
+   * @param {string} infoPath Дополнение к пути для разных запросов
+   * @param {string} method
+   * @param {string} body
+   */
+  async _fetchHandler(infoPath, method, body = null) {
+    const res = await fetch(`${this._baseUrl}${infoPath}`, {
+      method: method,
+      headers: this._headers,
+      body: body,
+      credentials: this._credentials,
+    });
     if (res.ok) {
       return res.json();
     }
-
-    return Promise.reject(new Error(`Ошибка ${res.status}`));
+    const statusError = await res.json();
+    let message = statusError.message;
+    if (statusError.validation) {
+      message = statusError.validation.body.message;
+    }
+    throw new Error(message);
   }
 
-  getUserInfo() {
-    return fetch(`${this._baseUrl}/users/me`, {
-      headers: this._headers,
-      credentials: 'include',
-    }).then((res) => this._handlePromise(res));
+  /**
+   * @method
+   * @public
+   * @param {string} infoPath
+   */
+  getData(infoPath) {
+    return this._fetchHandler(infoPath);
   }
 
-  editUserInfo(data) {
-    return fetch(`${this._baseUrl}/users/me`, {
-      method: "PATCH",
-      headers: this._headers,
-      credentials: 'include',
-      body: JSON.stringify({
-        name: data.userName,
-        about: data.userJob,
-      }),
-    }).then((res) => this._handlePromise(res));
+  /**
+   * @method
+   * @public
+   * @param {string} infoPath
+   * @param {string} name
+   * @param {string} about
+   */
+  setUserInfo(infoPath, { name, about }) {
+    return this._fetchHandler(
+      infoPath,
+      'PATCH',
+      JSON.stringify({
+        name,
+        about,
+      })
+    );
   }
 
-  changeUserAvatar(data) {
-    return fetch(`${this._baseUrl}/users/me/avatar`, {
-      method: "PATCH",
-      headers: this._headers,
-      credentials: 'include',
-      body: JSON.stringify({
-        avatar: data.avatar,
-      }),
-    }).then((res) => this._handlePromise(res));
+  /**
+   * @method
+   * @public
+   * @param {string} infoPath
+   * @param {string} name
+   * @param {string} link
+   */
+  uploadNewPicture(infoPath, { name, link }) {
+    return this._fetchHandler(
+      infoPath,
+      'POST',
+      JSON.stringify({
+        name,
+        link,
+      })
+    );
   }
 
-  getInitialCards() {
-    return fetch(`${this._baseUrl}/cards`, {
-      headers: this._headers,
-      credentials: 'include',
-    }).then((res) => this._handlePromise(res));
+  /**
+   * @method
+   * @public
+   * @param {string} infoPath
+   * @param {object} avatar URL аватара
+   */
+  uploadAvatar(infoPath, { avatar }) {
+    return this._fetchHandler(
+      infoPath,
+      'PATCH',
+      JSON.stringify({
+        avatar,
+      })
+    );
   }
 
-  addNewCard(data) {
-    return fetch(`${this._baseUrl}/cards`, {
-      method: "POST",
-      headers: this._headers,
-      credentials: 'include',
-      body: JSON.stringify({
-        name: data.name,
-        link: data.link,
-      }),
-    }).then((res) => this._handlePromise(res));
+  /**
+   * @method
+   * @public
+   * @param {string} infoPath
+   */
+  deleteData(infoPath) {
+    return this._fetchHandler(infoPath, 'DELETE');
   }
 
-  deleteCard(id) {
-    return fetch(`${this._baseUrl}/cards/${id}`, {
-      method: "DELETE",
-      headers: this._headers,
-      credentials: 'include',
-    }).then((res) => this._handlePromise(res));
+  /**
+   * @method
+   * @public
+   * @param {string} infoPath
+   */
+  putData(infoPath) {
+    return this._fetchHandler(infoPath, 'PUT');
   }
 
-  putLikeOnCard(id) {
-    return fetch(`${this._baseUrl}/cards/${id}/likes`, {
-      method: "PUT",
-      headers: this._headers,
-      credentials: 'include',
-    }).then((res) => this._handlePromise(res));
-  }
-
-  removeLikeFromCard(id) {
-    return fetch(`${this._baseUrl}/cards/${id}/likes`, {
-      method: "DELETE",
-      headers: this._headers,
-      credentials: 'include',
-    }).then((res) => this._handlePromise(res));
+  auth(infoPath, { password, email }) {
+    return this._fetchHandler(
+      infoPath,
+      'POST',
+      JSON.stringify({
+        password,
+        email,
+      })
+    );
   }
 }
 
-// Создание экземпляра класса Api
-const api = new Api(options);
+/**
+ * @constant
+ * @description Базовый объект для работы с API
+ * @type {object}
+ * @param {string} baseUrl Базовый путь к серверу
+ * @param {object} header Заголовки для запросов
+ */
+const api = new Api({
+  baseUrl: apiPaths.BASE_URL,
+  headers: apiHeaders,
+  credentials: 'include',
+});
 
 export default api;

@@ -1,19 +1,22 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React from 'react';
+import { Link } from 'react-router-dom';
+import AuthForm from './AuthForm';
 
-import UserEntryForm from "./UserEntryForm";
 
-function Register({ onRegister }) {
+function Register(props) {
   return (
-    <>
-      <UserEntryForm title="Регистрация" buttonText="Зарегистрироваться" onAuth={onRegister} />
-      <p className="user-entry__paragraph">
-        Уже зарегистрированы?&nbsp;
-        <Link to="/signin" className="user-entry__paragraph user-entry__paragraph_link">
+    <AuthForm
+      type="Регистрация"
+      buttonName="Зарегистрироваться"
+      {...props}
+    >
+      <p className="auth-container__info">
+        Уже зарегистрированы?{' '}
+        <Link to="/signin" className="link">
           Войти
         </Link>
       </p>
-    </>
+    </AuthForm>
   );
 }
 
