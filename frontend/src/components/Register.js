@@ -51,8 +51,8 @@ function Register(props) {
                 </label>
                 <button className="auth__submit-button button auth__button" type='submit'>Зарегистрироваться</button>
                 <p className="auth__text">Уже зарегистрированы?
-                     <Route path="/sign-up">
-                        <Link className="auth__text-link button" to="/sign-in">
+                     <Route path="/signup">
+                        <Link className="auth__text-link button" to="/signin">
                             {' '}Войти
                         </Link>
                     </Route>

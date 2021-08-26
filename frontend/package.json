@@ -1,7 +1,7 @@
 {
-  "author": "David Rizametov",
+  "author": "Aleksei",
   "name": "mesto-react-auth",
-  "description": "Instagram like application",
+  "description": "cards",
   "homepage": ".",
   "version": "0.1.0",
   "private": true,
@@ -20,8 +20,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "predeploy": "npm run build",
-    "deploy": "npm run build && scp -r ./build/* root@185.240.103.120:/home/react-mesto-api-full/frontend/build"
+    "predeploy": "npm run build"
   },
   "eslintConfig": {
     "extends": [

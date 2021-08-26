@@ -36,7 +36,7 @@ function App() {
       .then((res) => {
         if (res._id) {
           setTooltipStatus('success');
-          history.push('/sign-in');
+          history.push('/signin');
         }
       })
       .catch((res) => setTooltipStatus('fail'));
@@ -60,7 +60,7 @@ function App() {
     localStorage.removeItem('userId');
     setLoggedIn(false);
     setHamburgerMenu(false);
-    history.push('/sign-in');
+    history.push('/signin');
   }
 
   useEffect(() => {
@@ -214,16 +214,16 @@ function App() {
             onCardClick={handleCardClick}
           />
 
-          <Route path="/sign-in">
+          <Route path="/signin">
             <Login onLogin={onLogin} />
           </Route>
 
-          <Route path="/sign-up">
+          <Route path="/signup">
             <Register onRegister={onRegister} />
           </Route>
 
           <Route>
-            {loggedIn ? <Redirect to="/" /> : <Redirect to="/sign-in" />}
+            {loggedIn ? <Redirect to="/" /> : <Redirect to="/signin" />}
           </Route>
         </Switch>
 
