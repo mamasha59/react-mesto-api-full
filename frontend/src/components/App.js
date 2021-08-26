@@ -48,7 +48,7 @@ function App() {
       .then((data) => {
         if (data._id) {
           setEmail(email);
-          localStorage.setItem('userId', data._id);
+          //localStorage.setItem('userId', data._id);
           setLoggedIn(true);
           history.push('/');
         }

@@ -4,7 +4,7 @@ export const BASE_URL = 'https://api.future.bright.nomoredomains.club';
 export const register = (email, password) => {
     return fetch(`${BASE_URL}/signup`, {
         method: 'POST',
-        'credentials': 'include',
+        credentials: 'include',
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
@@ -22,7 +22,7 @@ export const register = (email, password) => {
 export const authorize = ({ password, email }) => {
     return fetch(`${BASE_URL}/signin`, {
         method: 'POST',
-        'credentials': 'include',
+        credentials: 'include',
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
@@ -40,7 +40,7 @@ export const authorize = ({ password, email }) => {
 export const getContent = (token) => {
     return fetch(`${BASE_URL}/users/me`, {
         method: 'GET',
-        'credentials': 'include',
+        credentials: 'include',
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',

@@ -14,7 +14,7 @@ class Api {
     getUserInfo() {
         return fetch(`${this._url}/users/me`, {
             method: 'GET',
-            'credentials': 'include',
+            credentials: 'include',
             headers: this._headers
         })
             .then(this._checkResponse);
@@ -23,7 +23,7 @@ class Api {
     getInitialCards() {
         return fetch(`${this._url}/cards`, {
             method: 'GET',
-            'credentials': 'include',
+            credentials: 'include',
             headers: this._headers
         })
             .then(this._checkResponse);
@@ -32,7 +32,7 @@ class Api {
     setUserInfo(formData) {
         return fetch(`${this._url}/users/me`, {
             method: 'PATCH',
-            'credentials': 'include',
+            credentials: 'include',
             headers: this._headers,
             body: JSON.stringify({
                 name: formData.name,
@@ -45,7 +45,7 @@ class Api {
     addCard(formData) {
         return fetch(`${this._url}/cards`, {
             method: 'POST',
-            'credentials': 'include',
+            credentials: 'include',
             headers: this._headers,
             body: JSON.stringify({
                 name: formData.name,
@@ -58,7 +58,7 @@ class Api {
     removeCard(id) {
         return fetch(`${this._url}/cards/${id}`, {
             method: 'DELETE',
-            'credentials': 'include',
+            credentials: 'include',
             headers: this._headers
         })
             .then(this._checkResponse);
@@ -67,7 +67,7 @@ class Api {
     changeLikeCardStatus(cardId, isLiked) {
         return fetch(`${this._url}/cards/${cardId}/likes/`, {
             method: isLiked ? 'PUT' : 'DELETE',
-            'credentials': 'include',
+            credentials: 'include',
             headers: this._headers
         })
             .then(this._checkResponse);
@@ -76,7 +76,7 @@ class Api {
     setUserAvatar(formData) {
         return fetch(`${this._url}/users/me/avatar`, {
             method: 'PATCH',
-            'credentials': 'include',
+            credentials: 'include',
             headers: this._headers,
             body: JSON.stringify({
                 avatar: formData.avatar
