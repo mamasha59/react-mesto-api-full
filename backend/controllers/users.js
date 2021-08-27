@@ -101,6 +101,12 @@ module.exports.login = (req, res, next) => { // --- авторизация
   //--
   return User.findUserByCredentials(email, password)
     .then((user) => {
+      bcrypt
+      .compare(password, userIsExist.password)
+      .then((matched) => {
+        if (!matched) {
+          next(new NotFound('Ресурс не найден'));
+        }
       const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '7d' });
       res
       .cookie('userToken', token, {
