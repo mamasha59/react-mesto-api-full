@@ -121,8 +121,8 @@ module.exports.login = (req, res, next) => { // --- авторизация
       err.statusCode = 401;
       next(err);
     });
-};
-
+})
+}
 module.exports.getUserInfo = (req, res, next) => {
   User.findById(req.user.id)
     .orFail(new NotFound('Пользователь с таким ID не найден'))
