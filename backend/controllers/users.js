@@ -102,7 +102,13 @@ module.exports.login = (req, res, next) => { // --- авторизация
   return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '7d' });
-      return res.send({ token });
+      res
+      .cookie('userToken', token, {
+        maxAge: 360000000,
+        httpOnly: true,
+        sameSite: true,
+      })
+      .send({ _id: userIsExist._id });
     })
     .catch(() => {
       const err = new Error('Необходима авторизация');
