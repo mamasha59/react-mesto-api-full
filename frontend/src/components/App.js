@@ -202,7 +202,7 @@ function App() {
         <Switch>
           <ProtectedRoute
             exact
-            path="/homepage"
+            path="/"
             loggedIn={loggedIn}
             component={Main}
             cards={cards}
@@ -223,7 +223,7 @@ function App() {
           </Route>
 
           <Route exact path="/">
-            {loggedIn ? <Redirect to="/homepage" /> : <Redirect to="/signin" />}
+            {loggedIn ? <Redirect to="/" /> : <Redirect to="/signin" />}
           </Route>
         </Switch>
 
