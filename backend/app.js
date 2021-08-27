@@ -60,7 +60,7 @@ app.post('/signup', validationSignUp, createUser);// ----регистрация
 
 app.use(auth);
 
-app.use('/', userRoutes); // ---общие роуты
+app.use('/users', userRoutes); // ---общие роуты
 app.use('/', cardRoutes); // ---общие роуты
 
 app.all('*', () => { // ---ошибка при несуществующем адресе

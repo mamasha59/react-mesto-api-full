@@ -8,14 +8,14 @@ const {
   getUser, getUsers, updateUserInfo, updateUserAvatar, getUserInfo,
 } = require('../controllers/users');
 
-routes.get('/users/me', getUserInfo); // --- информация текущего пользователя
+routes.get('/me', getUserInfo); // --- информация текущего пользователя
 
-routes.get('/users/:userId', validationUserId, getUser); // ---возвращает пользователя по _id
+routes.get('/:userId', validationUserId, getUser); // ---возвращает пользователя по _id
 
-routes.get('/users', getUsers); //  ---возвращает всех пользователей
+routes.get('/', getUsers); //  ---возвращает всех пользователей
 
-routes.patch('/users/me', usrMeValidation, updateUserInfo); //  ---обновляет профиль
+routes.patch('/me', usrMeValidation, updateUserInfo); //  ---обновляет профиль
 
-routes.patch('/users/me/avatar', avatarValidation, updateUserAvatar); //  ---обновляет аватар
+routes.patch('/me/avatar', avatarValidation, updateUserAvatar); //  ---обновляет аватар
 
 module.exports = routes;
