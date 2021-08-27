@@ -12,13 +12,13 @@ function Header(props) {
                 <button className={`${props.hamburgerStatus ? "header__hamburger-button_active" : "header__hamburger-button"}`} onClick={props.onHamburgerMenuClick} type="button" ></button>
             </Route>
 
-            <Route path="/sign-in">
-                <Link className="header__auth-link button" to="/sign-up">
+            <Route path="/signin">
+                <Link className="header__auth-link button" to="/signup">
                     Регистрация
                 </Link>
             </Route>
-            <Route path="/sign-up">
-                <Link className="header__auth-link button" to="/sign-in">
+            <Route path="/signup">
+                <Link className="header__auth-link button" to="/signin">
                     Войти
                 </Link>
             </Route>
