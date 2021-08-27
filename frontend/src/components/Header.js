@@ -8,9 +8,9 @@ function Header(props) {
             <a className="header__logo-link" href="/#" target="_self">
                 <img className="header__logo" src={logo} alt="Логотип" />
             </a>
-            {/* <Route exact path="/">
+            <Route exact path="/">
                 <button className={`${props.hamburgerStatus ? "header__hamburger-button_active" : "header__hamburger-button"}`} onClick={props.onHamburgerMenuClick} type="button" ></button>
-            </Route> */}
+            </Route>
 
             <Route path="/signin">
                 <Link className="header__auth-link button" to="/signup">

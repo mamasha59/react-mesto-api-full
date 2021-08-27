@@ -6,7 +6,7 @@ module.exports = (req, res, next) => {
   if (!req.cookies.jwt) {
     throw new BadAutorization('Необходима автризация'); // ---- ошибка 401
   } else {
-    const token = req.cookies.jwt;
+    const token = req.cookies.userToken;
     let payload;
     try {
       payload = jwt.verify(token, JWT_SECRET);

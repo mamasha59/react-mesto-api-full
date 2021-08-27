@@ -103,7 +103,7 @@ module.exports.login = (req, res, next) => { // --- авторизация
     .then((user) => {
       const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '7d' });
       res
-        .cookie('jwt', token, {
+        .cookie('userToken', token, {
           httpOnly: true,
           sameSite: true,
           secure: true,
