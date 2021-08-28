@@ -10,7 +10,7 @@ import AddPlacePopup from "./AddPlacePopup";
 import Login from "./Login";
 import Register from "./Register";
 import InfoTooltip from "./InfoTooltip";
-import * as Auth from "../utils/Auth";
+import * as Auth from "../utils/Auth.js";
 import newApi from "../utils/api";
 import {CurrentUserContext} from "../contexts/CurrentUserContext";
 import {Route, Switch, Redirect, useLocation, useHistory} from "react-router-dom";
