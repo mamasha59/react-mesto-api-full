@@ -16,10 +16,9 @@ const { requestLogger, errorLogger } = require('./middlewares/logger');
 const options = {
   origin: [
     'http://localhost:3000',
-    'http://localhost:3000/sign-in',
     'https://future.bright.nomoredomains.club',
     'http://future.bright.nomoredomains.club',
-    'https://api.future.bright.nomoredomains.club',
+    'https://api.future.bright.nomoredomains.club/',
     'http://api.future.bright.nomoredomains.club',
     'https://github.com/mamasha59/react-mesto-api-full',
 
