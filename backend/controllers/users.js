@@ -103,19 +103,10 @@ module.exports.login = (req, res, next) => { // --- авторизация
     .then((user) => {
       bcrypt
       .compare(password, userIsExist.password)
-      .then((matched) => {
-        if (!matched) {
-          next(new NotFound('Ресурс не найден'));
-        }
-      const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '7d' });
-      res
-      .cookie('userToken', token, {
-        maxAge: 360000000,
-        httpOnly: true,
-        sameSite: true,
+      .then((user) => {
+        const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret', { expiresIn: '7d' });
+        res.send({ token });
       })
-      .send({ _id: userIsExist._id });
-    })
     .catch(() => {
       const err = new Error('Необходима авторизация');
       err.statusCode = 401;
