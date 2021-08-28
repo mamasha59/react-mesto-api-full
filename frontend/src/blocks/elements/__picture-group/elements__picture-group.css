@@ -1,9 +1,0 @@
-.elements__picture-group {
-    grid-area: photo;
-    margin: 0 auto;
-    padding: 0;
-    width: 100%;
-    box-sizing: border-box;
-    display: flex;
-    position: relative;
-}

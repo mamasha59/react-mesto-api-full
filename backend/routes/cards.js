@@ -1,48 +1,50 @@
-const router = require('express').Router();
+const express = require('express');
 const { celebrate, Joi } = require('celebrate');
-const validator = require('validator');
+const { isURL } = require('validator');
 
-const method = (value) => {
-  const result = validator.isURL(value);
-  if (result) {
-    return value;
-  }
-  throw new Error('URL validation err');
-};
-
+const cardRoutes = express.Router();
 const {
-  createCard,
-  getCards,
-  deleteCard,
-  likeCard,
-  dislikeCard,
+  getCards, deleteCardById, createCard, likeCard, dislikeCard,
 } = require('../controllers/cards');
 
-router.get('/', getCards);
+// вернуть все карточки
+cardRoutes.get('/', getCards);
 
-router.delete('/:cardId', celebrate({
-  body: Joi.object().keys({
-    cardId: Joi.string().length(24).hex(),
+// удалить карточку по id
+cardRoutes.delete('/:cardId', celebrate({
+  params: Joi.object().keys({
+    cardId: Joi.string().hex().length(24),
   }).unknown(true),
-}), deleteCard);
+}), deleteCardById);
 
-router.post('/', celebrate({
+// создать карточку
+const checkURL = (val, helper) => {
+  if (!isURL(val, { require_protocol: true })) {
+    return helper.message('Не валидный URL');
+  }
+
+  return val;
+};
+cardRoutes.post('/', celebrate({
   body: Joi.object().keys({
-    name: Joi.string().required().min(1),
-    link: Joi.string().required().custom(method),
-  }).unknown(true),
+    name: Joi.string().required().min(2).max(30),
+    link: Joi.string().custom(checkURL, 'invalid URL').required(),
+    createdAt: Joi.date(),
+  }),
 }), createCard);
 
-router.put('/:cardId/likes', celebrate({
-  body: Joi.object().keys({
-    cardId: Joi.string().length(24).hex(),
+// поставить лайк карточке
+cardRoutes.put('/:cardId/likes', celebrate({
+  params: Joi.object().keys({
+    cardId: Joi.string().hex().length(24),
   }).unknown(true),
 }), likeCard);
 
-router.delete('/:cardId/likes', celebrate({
-  body: Joi.object().keys({
-    cardId: Joi.string().length(24).hex(),
+// убрать лайк с карточки
+cardRoutes.delete('/:cardId/likes', celebrate({
+  params: Joi.object().keys({
+    cardId: Joi.string().hex().length(24),
   }).unknown(true),
 }), dislikeCard);
 
-module.exports = router;
+exports.cardRoutes = cardRoutes;

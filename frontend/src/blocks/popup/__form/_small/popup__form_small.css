@@ -1,0 +1,5 @@
+@media screen and (max-width: 420px) {
+    .popup__form_small {
+        max-width: 240px;
+    }
+}

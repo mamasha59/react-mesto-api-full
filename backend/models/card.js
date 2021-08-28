@@ -1,35 +1,40 @@
 const mongoose = require('mongoose');
+const { isURL } = require('validator');
 
+// схема для карточки
 const cardSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    minlength: 2,
-    maxlength: 30,
+    minlength: [2, 'Минимальная длина 2 символа'],
+    maxlength: [30, 'Максимальная длина 30 символов'],
   },
+
   link: {
     type: String,
     required: true,
-    validate: {
-      validator(link) {
-        return /https?:\/\/(www\.)?[^w]+$/gim.test(link);
-      },
-    },
+    validate: [isURL, { require_protocol: true }, 'invalid URL'],
   },
+
   owner: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'user',
+    type: mongoose.ObjectId,
     required: true,
   },
-  likes: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'user',
-    default: '',
-  }],
+
+  likes: {
+    type: [mongoose.ObjectId],
+    default: [],
+  },
+
   createdAt: {
     type: Date,
     default: Date.now,
   },
 });
+
+cardSchema.path('link').validate((val) => {
+  const urlRegex = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-/]))?/;
+  return urlRegex.test(val);
+}, 'Invalid URL.');
 
 module.exports = mongoose.model('card', cardSchema);

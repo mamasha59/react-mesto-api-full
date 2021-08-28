@@ -1,9 +1,0 @@
-.burger__logo-group {
-    margin: 25px;
-    padding: 0;
-    box-sizing: border-box;
-    display: flex;
-    position: relative;
-    flex-direction: row;
-    justify-content: space-between;
-}

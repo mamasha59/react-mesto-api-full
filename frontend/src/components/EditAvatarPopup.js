@@ -1,53 +1,32 @@
-import React, {useState} from 'react';
+import React from "react";
 import PopupWithForm from "./PopupWithForm";
 
-function EditAvatarPopup ({onUpdateAvatar, isOpened, onClose, isLoading}) {
-    const [avatar, setAvatar] = useState("");
-    const [isEnable, setIsEnable] = useState(true);
-    const [isAvatarValid, setIsAvatarValid] = useState(true);
+function EditAvatarPopup(props) {
+  const avatarRef = React.useRef('');
 
-    React.useEffect(() => {
-        setAvatar("");
-        setIsAvatarValid(true);
-    }, [isOpened]);
+  function handleSubmit(e) {
+    e.preventDefault();
+    props.onUpdateAvatar({
+      avatar: avatarRef.current.value
+    });
+    avatarRef.current.value = '';
+  }
 
-    function handleAvatarChange (e) {
-        if (!e.target.validity.valid) {
-            setIsAvatarValid(false);
-            setIsEnable(false);
-        } else {
-            setIsEnable(true);
-            setIsAvatarValid(true);
-        }
-        setAvatar(e.target.value);
-    }
-
-    function handleSubmit(e) {
-        e.preventDefault();
-        onUpdateAvatar({
-            avatar
-        });
-    }
-
-    return (
-        <PopupWithForm name="avatar" title="Обновить аватар" value="Обновить"
-                       isOpened={isOpened}
-                       onClose={onClose}
-                       onSubmit={handleSubmit}
-                       isLoading={isLoading}
-                       isEnable={isEnable}
-                       isAvatarValid={isAvatarValid}>
-            <fieldset className="popup__fields">
-                <input className={`popup__field popup__avatar-link ${!isAvatarValid ? 'popup__field_type_error' : ''}`}
-                       placeholder="Ссылка на аватарку"
-                       type="url"
-                       required
-                       value={avatar}
-                       onChange={(e) => (handleAvatarChange(e))}/>
-                <span className={`popup__input-error-message ${!isAvatarValid ? 'popup__input-error-message_active' : ''}`}>Здесь должна быть ссылка</span>
-            </fieldset>
-        </PopupWithForm>
-    );
+  return (
+    <PopupWithForm name="avatar" title="Обновить аватар?" isEditAvatarPopupOpen={props.isOpen}
+                   closeAllPopups={props.onClose} onSubmit={handleSubmit}>
+      <label>
+        <input id="input" type="url" name="image" ref={avatarRef}
+               className="popup__input popup__input_small popup__input-image"
+               placeholder="Ссылка на картинку" required pattern="https?://.+"/>
+        <span className="popup__input-error input-error">
+              </span>
+      </label>
+      <button type="submit" className="popup__button popup__button_small popup__button-place"
+              onClick={props.onClose}>Создать
+      </button>
+    </PopupWithForm>
+  )
 }
 
-export default EditAvatarPopup;
+export default EditAvatarPopup

@@ -1,23 +1,14 @@
 .profile__info {
-    grid-area: info;
-    margin: 0 auto;
-    padding: 0 0 0 30px;
-    box-sizing: border-box;
     display: grid;
-    grid-template-rows: repeat(2, minmax(min-content, max-content));
-    grid-template-columns: repeat(2, minmax(min-content, max-content));
-    column-gap: 18px;
-    row-gap: 16px;
-    grid-template-areas:
-    "name editbtn"
-    "job .";
-
+    grid-template-rows: repeat(2, auto);
+    grid-template-columns: 87.5% 7.14%;
+    gap: 16px 18px;
+    max-width: 336px;
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 320px) {
     .profile__info {
-        padding-left: 0;
-        column-gap: 10px;
-        row-gap: 14px;
+        gap: 10px 14px;
+        width: calc(100% - 2 * 19px);
     }
 }

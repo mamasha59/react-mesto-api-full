@@ -1,26 +1,19 @@
 require('dotenv').config();
-
 const express = require('express');
-const helmet = require('helmet');
-const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const cors = require('cors');
-const rateLimit = require('express-rate-limit');
-const cookieParser = require('cookie-parser');
-
-const { errors } = require('celebrate');
+const helmet = require('helmet');
 const { celebrate, Joi } = require('celebrate');
+const { errors } = require('celebrate');
+const { isURL } = require('validator');
+const cors = require('cors');
+const { routes } = require('./routes/index');
+const { login, createUser } = require('./controllers/users');
+const NotFoundError = require('./errors/not-found-error');
 
+const { PORT = 3001 } = process.env;
+const app = express();
 const auth = require('./middlewares/auth');
-const errorHandler = require('./middlewares/errorHandler');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
-
-const userRoutes = require('./routes/users');
-const cardRoutes = require('./routes/cards');
-
-const NotFoundErr = require('./errors/not-found-err');
-
-const { createUser, login } = require('./controllers/users');
 
 mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
@@ -28,49 +21,14 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useFindAndModify: false,
 });
 
-const { PORT = 3000 } = process.env;
-const app = express();
-
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-});
-
-app.use(requestLogger);
-app.use(limiter);
 app.use(helmet());
-app.use(cookieParser());
 
-const allowedCors = [ // ----доступные ссылки
-  'localhost:3000',
-  'https://future.bright.nomoredomains.club',
-  'http://future.bright.nomoredomains.club',
-  'https://api.future.bright.nomoredomains.club/',
-  'http://api.future.bright.nomoredomains.club',
-  'https://github.com/mamasha59/react-mesto-api-full',
-];
-
+app.use(express.json());
 app.use(cors());
 
-app.use((req, res, next) => {
-  const { origin } = req.headers;
-  if (allowedCors.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
-  }
-  const { method } = req;
-  const DEFAULT_ALLOWED_METHODS = 'GET,HEAD,PUT,PATCH,POST,DELETE';
-  if (method === 'OPTIONS') {
-    res.header('Access-Control-Allow-Methods', DEFAULT_ALLOWED_METHODS);
-  }
-  const requestHeaders = req.headers['access-control-request-headers'];
-  if (method === 'OPTIONS') {
-    res.header('Access-Control-Allow-Headers', requestHeaders);
-  }
+app.use(requestLogger); // подключаем логгер запросов
 
-  next();
-});
-
-app.get('/crash-test', () => { // --краш тест
+app.get('/crash-test', () => {
   setTimeout(() => {
     throw new Error('Сервер сейчас упадёт');
   }, 0);
@@ -78,29 +36,58 @@ app.get('/crash-test', () => { // --краш тест
 
 app.post('/signin', celebrate({
   body: Joi.object().keys({
-    email: Joi.string().required().min(6),
-    password: Joi.string().required().min(8).pattern(new RegExp('[a-zA-Z0-9S]')),
-  }).unknown(true),
+    email: Joi.string().email().required(),
+    password: Joi.string().required(),
+  }),
 }), login);
+
+const checkURL = (val, helper) => {
+  if (!isURL(val, { require_protocol: true })) {
+    return helper.message('Не валидный URL');
+  }
+
+  return val;
+};
+
 app.post('/signup', celebrate({
   body: Joi.object().keys({
-    email: Joi.string().required().min(6),
-    password: Joi.string().required().min(8).pattern(new RegExp('[a-zA-Z0-9S]')),
-  }).unknown(true),
+    name: Joi.string().min(2).max(30).default('Жак-Ив Кусто'),
+    about: Joi.string().min(2).max(30).default('Исследователь'),
+    avatar: Joi.string().custom(checkURL, 'invalid URL').default('https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png'),
+    email: Joi.string().email().required(),
+    password: Joi.string().required(),
+  }),
 }), createUser);
 
 app.use(auth);
-app.use('/users', userRoutes);
-app.use('/cards', cardRoutes);
 
-app.get('*', () => {
-  throw new NotFoundErr('Запрашиваемый ресурс не найден');
+app.use('/', routes);
+
+app.use((req, res, next) => {
+  next(new NotFoundError('Ресурс не найден'));
 });
 
-app.use(errorLogger);
+app.use(errorLogger); // подключаем логгер ошибок
 
-app.use(errors());
+// обработчики ошибок
+app.use(errors()); // обработчик ошибок celebrate
 
-app.use(errorHandler);
+// централизованный обработчик
+app.use((err, req, res, next) => {
+  // если у ошибки нет статуса, выставляем 500
+  const { statusCode = 500, message } = err;
 
-app.listen(PORT);
+  res
+    .status(statusCode)
+    .send({
+      // проверяем статус и выставляем сообщение в зависимости от него
+      message: statusCode === 500
+        ? 'На сервере произошла ошибка'
+        : message,
+    });
+  next();
+});
+
+app.listen(PORT, () => {
+  console.log(`App listening on port ${PORT}`);
+});

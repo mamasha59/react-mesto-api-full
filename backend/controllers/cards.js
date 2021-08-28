@@ -1,72 +1,78 @@
+const mongoose = require('mongoose');
 const Card = require('../models/card');
-const NotFoundErr = require('../errors/not-found-err');
-const ForbiddenError = require('../errors/forbidden-error');
-const ValidationError = require('../errors/validation-error');
+const NotFoundError = require('../errors/not-found-error');
+const BadRequestError = require('../errors/bad-request-error');
 
-module.exports.createCard = async function (req, res, next) {
+const getCards = async (req, res, next) => {
   try {
-    const owner = req.user._id;
-    const { name, link } = req.body;
-    const card = await Card.create({ name, link, owner });
-    res.send({ card });
-  } catch (error) {
-    next(error);
+    const allCards = await Card.find({}).sort({ createAt: -1 });
+    res.status(200).send(allCards);
+  } catch (err) {
+    next(err);
   }
 };
 
-module.exports.getCards = async function (req, res, next) {
+const deleteCardById = async (req, res, next) => {
   try {
-    const cards = await Card.find({}).populate('owner');
-    res.send({ cards });
-  } catch (error) {
-    next(error);
+    const card = await Card.findById(req.params.cardId)
+      .orFail(new NotFoundError('Объект не найден'));
+    if (card.owner.toString() !== req.user._id) {
+      throw new BadRequestError('Пользователь не имеет прав на удаление данной карточки');
+    }
+
+    const cardWithId = await Card.findByIdAndDelete(req.params.cardId)
+      .orFail(new NotFoundError('Объект не найден'));
+    res.status(200).send(cardWithId);
+  } catch (err) {
+    next(err);
   }
 };
 
-module.exports.deleteCard = async function (req, res, next) {
+const createCard = async (req, res, next) => {
+  const { name, link } = req.body;
+
   try {
-    if (req.params.cardId.length < 24) {
-      throw new ValidationError('Переданы некорректные данные');
+    const card = new Card({ name, link, likes: [] });
+    card.owner = new mongoose.Types.ObjectId(req.user._id);
+    await card.save();
+    res.send(card);
+  } catch (err) {
+    if (err.name === 'ValidationError') {
+      next(new BadRequestError('Переданы некорректные данные'));
+      return;
     }
-    const card = await Card.findById(req.params.cardId);
-    if (card === null) {
-      throw new NotFoundErr('Запрашиваемая карточка не найдена');
-    }
-    const cardOwnerToString = card.owner.toString();
-    if (cardOwnerToString !== req.user._id) {
-      throw new ForbiddenError('У вас нет права удалить эту карточку');
-    }
-    await Card.findByIdAndDelete(card);
-    res.send({ card });
-  } catch (error) {
-    next(error);
+    next(err);
   }
 };
 
-module.exports.likeCard = async function (req, res, next) {
+const likeCard = async (req, res, next) => {
   try {
-    const card = await Card.findByIdAndUpdate(req.params.cardId,
-      { $addToSet: { likes: req.user._id } },
-      { new: true, runValidators: true });
-    if (card === null) {
-      throw new NotFoundErr('Запрашиваемая карточка не найдена');
-    }
-    res.send({ card });
-  } catch (error) {
-    next(error);
+    const like = await Card.findByIdAndUpdate(
+      req.params.cardId,
+      { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
+      { new: true },
+    )
+      .orFail(new NotFoundError('Объект не найден'));
+    res.status(200).send(like);
+  } catch (err) {
+    next(err);
   }
 };
 
-module.exports.dislikeCard = async function (req, res, next) {
+const dislikeCard = async (req, res, next) => {
   try {
-    const card = await Card.findByIdAndUpdate(req.params.cardId,
-      { $pull: { likes: req.user._id } },
-      { new: true, runValidators: true });
-    if (card === null) {
-      throw new NotFoundErr('Запрашиваемая карточка не найдена');
-    }
-    res.send({ card });
-  } catch (error) {
-    next(error);
+    const dislike = await Card.findByIdAndUpdate(
+      req.params.cardId,
+      { $pull: { likes: req.user._id } }, // убрать _id из массива
+      { new: true },
+    )
+      .orFail(new NotFoundError('Объект не найден'));
+    res.status(200).send(dislike);
+  } catch (err) {
+    next(err);
   }
+};
+
+module.exports = {
+  getCards, deleteCardById, createCard, likeCard, dislikeCard,
 };

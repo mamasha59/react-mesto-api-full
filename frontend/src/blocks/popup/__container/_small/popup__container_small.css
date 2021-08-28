@@ -1,0 +1,11 @@
+@media screen and (max-width: 600px) {
+    .popup__container_small {
+        max-width: 350px;
+    }
+}
+
+@media screen and (max-width: 420px) {
+    .popup__container_small {
+        max-width: 270px;
+    }
+}

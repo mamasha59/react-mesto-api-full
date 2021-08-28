@@ -1,17 +1,14 @@
 .profile__avatar {
-    grid-area: avatar;
-    margin: 0 auto;
-    padding: 0;
-    box-sizing: border-box;
     border-radius: 50%;
     width: 120px;
     height: 120px;
     object-fit: cover;
-    background-size: cover;
-    background-color: transparent;
 }
 
-.profile__avatar:hover {
-    opacity: 0.4;
-    background-color: #C4C4C4;
+@media screen and (max-width: 630px) {
+    .profile__avatar {
+        margin: 0 0 26px 0;
+    }
 }
+
+

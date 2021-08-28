@@ -1,20 +1,26 @@
 .popup__title {
-    display: flex;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-style: normal;
-    font-weight: 900;
     font-size: 24px;
-    line-height: 1.2;
-    color: #000000;
-    font-family: inherit;
+    line-height: calc(29.05 / 24);
+    font-weight: 900;
+    font-style: normal;
+    margin: 34px 64px 24px 36px;
+    padding: 0;
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 600px) {
     .popup__title {
-        padding: 0;
+        margin: 30px 22px 25px 22px;
+        font-size: 20px;
+    }
+}
+
+@media screen and (max-width: 420px) {
+    .popup__title {
         font-size: 18px;
-        text-align: center;
+        line-height: calc(21.78 / 18);
+        font-style: normal;
+        margin-top: 25px;
+        margin-right: 0;
+        margin-bottom: 45px;
     }
 }

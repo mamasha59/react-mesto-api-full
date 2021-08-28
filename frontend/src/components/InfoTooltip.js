@@ -1,28 +1,25 @@
-import React from 'react';
-import success from "../images/success.svg";
-import fail from "../images/fail.svg";
+import React from "react";
+import PopupWithForm from "./PopupWithForm";
+import ok from "../images/ok.svg";
+import err from "../images/error.svg";
 
-function InfoTooltip ({name, isSuccess, isFail, onClose}) {
-    const successMessage = "Вы успешно зарегистрировались";
-    const failMessage = "Что-то пошло не так! Попробуйте ещё раз.";
 
-    return (
-        <section className={`popup popup_${name} ${isSuccess || isFail? 'popup_opened' : ''}`}>
-            <figure className="popup__container">
-                <button className="popup__closebtn" type="button" onClick={onClose}></button>
-                <div className="popup__icon-group">
-                    <img
-                        className="popup__icon"
-                        src={isSuccess ? success : fail}
-                        alt={isSuccess ? successMessage : failMessage}/>
-                    <figcaption className="popup__icon-title">
-                        {isSuccess ? successMessage : failMessage}
-                    </figcaption>
-                </div>
-            </figure>
-        </section>
-    );
+function InfoTooltip(props) {
 
+  const texts = {
+    titleOne: 'Вы успешно зарегистрировались!',
+    titleTwo: 'Что-то пошло не так!\n' +
+      'Попробуйте ещё раз.'
+  }
+
+  return(
+    <PopupWithForm name="registration_ok" closeAllPopups={props.onClose} isInfoTooltipOpen={props.isOpen}>
+      <img src={props.isRegisterSuccessful ? ok : err} alt="значок статуса регистрации" className="popup__reg-ico"/>
+      <h3 className="popup__title popup__title_reg">
+        {props.isRegisterSuccessful ? texts.titleOne : texts.titleTwo}</h3>
+    </PopupWithForm>
+  )
 }
 
-export default InfoTooltip;
+export default InfoTooltip
+

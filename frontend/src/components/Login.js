@@ -1,75 +1,43 @@
-import React, {useState} from 'react';
-import {NavLink} from "react-router-dom";
-import Header from "./Header";
+import React from "react";
 
-function Login ({isLoading, name, title, value, handleLogin, headerPath, headerValue}) {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [isEnable, setIsEnable] = useState(true);
-    const [isEmailValid, setIsEmailValid] = useState(true);
-    const [isPasswordValid, setIsPasswordValid] = useState(true);
+function Login(props) {
 
-    function handleEmailChange(e) {
-        if (!e.target.validity.valid) {
-            setIsEmailValid(false);
-            setIsEnable(false);
-        } else {
-            setIsEnable(true);
-            setIsEmailValid(true);
-        }
-        setEmail(e.target.value);
-    }
+  function handleChange(e) {
+    const {name, value} = e.target;
+    props.onEnter({
+      ...props.data,
+      [name]: value
+    })
+  }
 
-    function handlePasswordChange(e) {
-        if (!e.target.validity.valid) {
-            setIsPasswordValid(false);
-            setIsEnable(false);
-        } else {
-            setIsEnable(true);
-            setIsPasswordValid(true);
-        }
-        setPassword(e.target.value);
-    }
+  function handleSubmit(e) {
+    const {email, password} = props.data;
+    e.preventDefault();
+    props.onAutorization({email, password})
+  }
 
-    function handleSubmit(e) {
-        e.preventDefault();
-        if(!email || !password) {
-            return
-        }
-        handleLogin(email, password);
-    }
-
-    return (
-        <>
-            <Header>
-                <NavLink to={headerPath} className="header__link header__button">{headerValue}</NavLink>
-            </Header>
-            <section className="auth">
-                <form className="auth__container" name={name} onSubmit={handleSubmit}>
-                    <h2 className="auth__title">{title}</h2>
-                    <fieldset className="auth__fields">
-                        <input className={`auth__field auth__email ${!isEmailValid ? 'auth__field_type_error' : ''}`}
-                               placeholder="Email"
-                               value={email}
-                               onChange={handleEmailChange}
-                               type="email"
-                               required/>
-                        <span className={`auth__input-error-message ${!isEmailValid ? 'auth__input-error-message_active' : ''}`}>Введите email</span>
-                        <input className="auth__field auth__password"
-                               placeholder="Пароль" value={password}
-                               onChange={handlePasswordChange}
-                               type="password"
-                               required
-                               minLength="8"/>
-                        <span className={`auth__input-error-message ${!isPasswordValid ? 'auth__input-error-message_active' : ''}`}>Введите пароль. Минимум 8 символов</span>
-                    </fieldset>
-                    <button className={`auth__submitbtn ${!isEnable ? 'auth__submitbtn_disabled' : ''}`}
-                            disabled={!isEnable} type="submit"
-                            value={value}>{isLoading ? "Подождите..." : value}</button>
-                </form>
-            </section>
-        </>
-    );
+  return (
+    <form className="popup__form popup__form_login" onSubmit={handleSubmit}>
+      <h3 className="popup__title popup__title_login">Вход</h3>
+      <label>
+        <input id="email" type="email" name="email" value={props.data.email}
+               className="popup__input popup__input_login"
+               placeholder="Email" required minLength="2" maxLength="40"
+               pattern="([A-z0-9_.-]{1,})@([A-z0-9_.-]{1,}).([A-z]{2,8})" onChange={handleChange}/>
+        <span className="popup__input-error">
+            </span>
+      </label>
+      <label>
+        <input id="password" type="password" name="password" value={props.data.password}
+               className="popup__input popup__input_login"
+               placeholder="Пароль" required minLength="2" maxLength="10" onChange={handleChange}/>
+        <span className="popup__input-error">
+            </span>
+      </label>
+      <button type="submit" className="popup__button popup__button_login">Войти</button>
+      <p className="popup__subtitle"></p>
+    </form>
+  )
 }
 
-export default Login;
+export default Login

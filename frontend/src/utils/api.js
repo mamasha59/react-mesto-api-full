@@ -1,127 +1,118 @@
-export default class Api {
-    constructor({address, token, groupID}) {
-        this._address = address;
-        this._token = token;
-        this._groupID = groupID;
-        this._getResponseJson = this._getResponseJson.bind(this);
-    }
+class Api {
+  constructor(options) {
+    this.baseUrl = options.baseUrl;
+    this.headers = options.headers;
+  }
 
-    _getResponseData (response) {
-        if(response.ok) {
-            return Promise.resolve("done");
-        }
-        return Promise.reject(new Error(`Ошибка: ${response.status}`));
+  _checkResponse(res) {
+    if (res.ok) {
+      return res.json();
     }
+    return Promise.reject(`Ошибка ${res.status}`);
+  }
 
-    _getResponseJson (response) {
-        if(response.ok) {
-            return response.json();
-        }
-        return Promise.reject(new Error(`Ошибка: ${response.status}`));
-    }
+  // запрос данных пользователя с сервера
+  getProfileInfo() {
+    return fetch(this.baseUrl + 'users/me', {
+      headers: this.headers
+    })
+      .then(this._checkResponse)
+  }
 
-    changeLikeCardStatus(_id, isLiked) {
-        return fetch (`${this._address}/cards/likes/${_id}`, {
-            method: isLiked ? 'DELETE' : 'PUT',
-            headers: {
-                authorization: this._token
-            }
-        })
-            .then(response => {
-                return this._getResponseJson(response);
-            });
-    }
+  // редактирование данных пользователя
+  editProfileInfo(name, about) {
+    return fetch(this.baseUrl + 'users/me', {
+      method: 'PATCH',
+      headers: this.headers,
+      body: JSON.stringify({
+        name: name,
+        about: about
+      })
+    })
+      .then(this._checkResponse)
+  }
 
-    editAvatar(avatar) {
-        return fetch(`${this._address}/users/me/avatar`, {
-            method: 'PATCH',
-            headers: {
-                authorization: this._token,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                avatar
-            })
-        })
-            .then(response => {
-                return this._getResponseJson(response);
-            });
-    }
+  // загрузка массива карточек с сервера
+  getInitialCards() {
+    return fetch(this.baseUrl + 'cards', {
+      headers: this.headers
+    })
+      .then(this._checkResponse)
+  }
 
-    editProfile(name, description) {
-        return fetch(`${this._address}/users/me`, {
-            method: 'PATCH',
-            headers: {
-                authorization: this._token,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                name: name,
-                about: description
-            })
-        })
-            .then(response => {
-                return this._getResponseJson(response);
-            });
-    }
+// добавление новой карточки
+  addNewCard(name, link) {
+    return fetch(this.baseUrl + 'cards', {
+      method: 'POST',
+      headers: this.headers,
+      body: JSON.stringify({
+        name: name,
+        link: link
+      })
+    })
+      .then(this._checkResponse)
+  }
 
-    getOwnerInfo() {
-        return fetch(`${this._address}/users/me`,{
-            headers: {
-                authorization: this._token
-            }
-        })
-            .then(response => {
-               return this._getResponseJson(response);
-            });
-    }
+// редактирование аватара
+  addNewAvatar(avatar) {
+    return fetch(this.baseUrl + 'users/me/avatar', {
+      method: 'PATCH',
+      headers: this.headers,
+      body: JSON.stringify({
+        avatar: avatar,
+      })
+    })
+      .then(this._checkResponse)
+  }
 
-    getInitialCards() {
-        return fetch(`${this._address}/cards`, {
-            headers: {
-                authorization: this._token
-            }
-        })
-            .then(response => {
-                return this._getResponseJson(response);
-            });
-    }
+  // удаление карточки
+  deleteCard(cardId) {
+    return fetch(this.baseUrl + `cards/${cardId}`, {
+      method: 'DELETE',
+      headers: this.headers,
+    })
+      .then(this._checkResponse)
+  }
 
-    addNewCard(placeName, placeLink) {
-        return fetch(`${this._address}/cards`,
-            {
-                method: "POST",
-                headers: {
-                    authorization: this._token,
-                    "Content-type": "application/json"
-                },
-                body: JSON.stringify({
-                    name: placeName,
-                    link: placeLink
-                })
-            })
-            .then(response => {
-                return this._getResponseJson(response);
-            })
+  changeLikeCardStatus(cardId, isLiked) {
+    if (isLiked) {
+      return this._putLike(cardId)
+    } else {
+      return this._deleteLike(cardId)
     }
+  }
 
-    deleteCard(_id) {
-        return fetch(`${this._address}/cards/${_id}`, {
-            method: "DElETE",
-            headers: {
-                authorization: this._token
-            }
-        })
-            .then(response => {
-                return this._getResponseData(response);
-            })
-    }
+  //поставить лайк
+  _putLike(cardId) {
+    return fetch(this.baseUrl + `cards/${cardId}/likes`, {
+      method: 'PUT',
+      headers: this.headers,
+    })
+      .then(this._checkResponse)
+  }
+
+  //удалить лайк
+  _deleteLike(cardId) {
+    return fetch(this.baseUrl + `cards/${cardId}/likes`, {
+      method: 'DELETE',
+      headers: this.headers,
+    })
+      .then(this._checkResponse)
+  }
+
+  setToken() {
+    this.headers.authorization = `Bearer ${localStorage.getItem('jwt')}`;
+  }
+
 }
 
-export const api = new Api({
-    address: "https://api.future.bright.nomoredomains.club",
-    headers: {
-        authorization: 'a7c83460-3094-477b-9fb5-f7c43e4b79fa',
-        'Content-Type': 'application/json'
-    }
-});
+const newApi = new Api({
+
+  baseUrl: 'https://api.future.bright.nomoredomains.club/',
+  headers: {
+    authorization: `Bearer ${localStorage.getItem('jwt')}`,
+    'Content-Type': 'application/json'
+  }
+})
+
+export default newApi

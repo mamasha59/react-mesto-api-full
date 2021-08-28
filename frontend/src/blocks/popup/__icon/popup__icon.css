@@ -1,8 +1,0 @@
-.popup__icon {
-    margin: 0 auto;
-    padding: 0 0 32px 0;
-    box-sizing: border-box;
-    display: flex;
-    max-width: 120px;
-    object-fit: contain;
-}
