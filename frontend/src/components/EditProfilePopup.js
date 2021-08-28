@@ -1,101 +1,47 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react';
-import PopupWithForm from './PopupWithForm';
-import CurrentUserContext from '../contexts/CurrentUserContext';
-import FormInput from './Form/FormInput';
-import { func, bool } from 'prop-types';
+import React from "react";
+import PopupWithForm from "./PopupWithForm";
+import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
-EditProfilePopup.propTypes = {
-  onClose: func.isRequired,
-  onUpdateUser: func.isRequired,
-  open: bool,
-  submitting: bool,
-};
+function EditProfilePopup({isOpen, onClose, onUpdateUser}) {
+  
+  const currentUser = React.useContext(CurrentUserContext);
+  const [name, setName] = React.useState("");
+  const [description, setDescription] = React.useState("");
 
-function EditProfilePopup({
-  onClose,
-  onUpdateUser,
-  open = false,
-  submitting = false,
-}) {
-  const { currentUser } = useContext(CurrentUserContext);
-  const defaultFormState = useMemo(
-    () => ({
-      name: {
-        value: currentUser.name,
-        valid: true,
-      },
-      about: {
-        value: currentUser.about,
-        valid: true,
-      },
-    }),
-    [currentUser]
-  );
-  const [form, setForm] = useState(defaultFormState);
-  const [formValid, setFormValid] = useState(true);
 
-  const handleInput = (value, name, valid) => {
-    setForm({
-      ...form,
-      [name]: { value, valid },
-    });
-  };
+  React.useEffect(() => {
+    setName(currentUser.name);
+    setDescription(currentUser.about);
+  }, [currentUser]); 
 
-  const handleSubmit = (evt) => {
-    evt.preventDefault();
 
-    onUpdateUser({
-      name: form.name.value,
-      about: form.about.value,
-    });
-  };
+    function handleChangeName(e) {
+        setName(e.target.value);
+      }
 
-  useEffect(() => {
-    if (form.name.valid && form.about.valid) {
-      setFormValid(true);
-    } else {
-      setFormValid(false);
-    }
-  }, [form]);
+      function handleChangeDescription(e) {
+        setDescription(e.target.value);
+      }
 
-  useEffect(() => {
-    setForm(defaultFormState);
-  }, [currentUser, open, setForm, defaultFormState]);
+      function handleSubmit(e) {
+        e.preventDefault();
+        onUpdateUser({
+          name,
+          about: description,
+        });
+      } 
 
-  return (
-    <PopupWithForm
-      title="Редактировать профиль"
-      name="edit-profile"
-      isOpen={open}
-      disabled={!formValid}
-      onClose={onClose}
-      onSubmit={handleSubmit}
-      submitting={submitting}
-    >
-      <FormInput
-        type="text"
-        name="name"
-        id="name-input"
-        className="form__input form__input_type_name form__input_style_light"
-        required
-        minLength="2"
-        maxLength="40"
-        value={form.name.value}
-        onChange={handleInput}
-      />
-      <FormInput
-        type="text"
-        name="about"
-        id="about-input"
-        className="form__input form__input_type_about form__input_style_light"
-        required
-        minLength="2"
-        maxLength="200"
-        value={form.about.value}
-        onChange={handleInput}
-      />
-    </PopupWithForm>
-  );
+      
+
+    return (
+        <PopupWithForm onSubmit={handleSubmit} name="edit-profile" title="Редактировать профиль" buttonTitle="Сохранить" isOpen={isOpen} onClose={onClose} >
+        <input type="text" value={name} onChange={handleChangeName} id="name" className="popup__input popup__input_invalid popup__text_name" required minLength={2} maxLength={40}/>
+        <span className="popup__error popup__error_is-active" id="name-error" />
+        <input type="text" value={description} onChange={handleChangeDescription} id="description" className="popup__input popup__input_invalid popup__text_description" required minLength={2} maxLength={200} />
+        <span className="popup__error popup__error_is-active" id="description-error"/></PopupWithForm>
+    )
+
 }
+
 
 export default EditProfilePopup;

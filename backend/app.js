@@ -1,99 +1,87 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const cookieParser = require('cookie-parser');
-const rateLimit = require('express-rate-limit');
-const helmet = require('helmet');
-const { Joi, celebrate, Segments, errors } = require('celebrate');
-const { requestLogger, errorLogger } = require('./middlewares/logger');
+/* eslint-disable linebreak-style */
 require('dotenv').config();
-const auth = require('./middlewares/auth');
-const clientErrorHandler = require('./middlewares/clientErrorHandler');
-const { NotFoundError } = require('./utils/httpErrors');
-const { createUser, login } = require('./controllers/users');
+const express = require('express');
 
-const {
-  SERVER_PORT = 3000,
-  DB_HOST = 'localhost',
-  DB_PORT = 27017,
-  DB_NAME = 'mestodb',
-} = process.env;
+const mongoose = require('mongoose');
+const { errors, celebrate, Joi } = require('celebrate');
+const usersRouter = require('./routes/users');
+const cardsRouter = require('./routes/cards');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
+const { createUser, login } = require('./controllers/users');
+const NotFoundError = require('./errors/not-found-err');
+const auth = require('./middlewares/auth');
+
+const { PORT = 3000 } = process.env;
 const app = express();
 
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 50,
+mongoose.connect('mongodb://localhost:27017/mestodb', {
+  useNewUrlParser: true,
+  useCreateIndex: true,
+  useFindAndModify: false,
+  useUnifiedTopology: true,
+// eslint-disable-next-line no-console
+}).then(() => console.log('Connected to DS'));
+
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', '*');
+  res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS');
+  if (req.method === 'OPTIONS') {
+    res.send(200);
+  }
+  next();
+});
+app.use(express.json()); // для собирания JSON-формата
+app.use(requestLogger);
+
+app.get('/crash-test', () => {
+  setTimeout(() => {
+    throw new Error('Сервер сейчас упадёт');
+  }, 0);
 });
 
-app.use(
-  cors({
-    origin: [
-      'http://localhost:3000',
-      'https://future.bright.nomoredomains.club',
-      'https://api.future.bright.nomoredomains.club',
-    ],
-    credentials: true,
-  })
-);
-app.use(express.json());
-app.use(cookieParser());
-app.use(requestLogger);
-app.use(limiter);
-app.use(helmet());
-
-app.post(
-  '/api/signin',
-  celebrate({
-    [Segments.BODY]: Joi.object().keys({
-      email: Joi.string().required().email(),
-      password: Joi.string().required().min(6),
-    }),
+app.post('/signin', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required(),
   }),
-  login
-);
+}), login);
 
-app.post(
-  '/api/signup',
-  celebrate({
-    [Segments.BODY]: Joi.object().keys({
-      email: Joi.string().required().email(),
-      password: Joi.string().required().min(6),
-      name: Joi.string(),
-      about: Joi.string(),
-      avatar: Joi.string().regex(
-        /^https?:\/\/(www\.)?[a-zA-Z0-9-.]+\.[a-z]{2,}\/[\S]+\.(png|jpg)/
-      ),
-    }),
+app.post('/signup', celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+    avatar: Joi.string().pattern(/^https?:\/\/(www\.)?([a-zA-Z0-9-])+\.([a-zA-Z])+\/?([a-zA-Z0-9\-_~:/#[\]@!&â€™,;=]+)/),
+    email: Joi.string().required().email(),
+    password: Joi.string().required(),
   }),
-  createUser
-);
+}), createUser);
 
-app.use('/api/users', auth, require('./routes/users'));
-app.use('/api/cards', auth, require('./routes/cards'));
-
-app.use(() => {
+app.use(auth);
+app.use('/', usersRouter);
+app.use('/', cardsRouter);
+app.use('/*', () => {
   throw new NotFoundError('Запрашиваемый ресурс не найден');
 });
-
 app.use(errorLogger);
 app.use(errors());
-app.use(clientErrorHandler);
 
-mongoose
-  .connect(`mongodb://${DB_HOST}:${DB_PORT}/${DB_NAME}`, {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useFindAndModify: false,
-    useUnifiedTopology: true,
-  })
-  .then(() => {
-    console.log('Соединение с базой данных установлено');
-  })
-  .catch((error) => {
-    console.error(error.message);
-    process.exit(1);
-  });
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
+  // если у ошибки нет статуса, выставляем 500
+  const { statusCode = 500, message } = err;
 
-app.listen(SERVER_PORT, () => {
-  console.log('Сервер был запущен на порту', SERVER_PORT);
+  res
+    .status(statusCode)
+    .send({
+      // проверяем статус и выставляем сообщение в зависимости от него
+      message: statusCode === 500
+        ? `На сервере произошла ошибка${err}`
+        : message,
+    });
 });
+
+app.listen(PORT, () => (
+  // eslint-disable-next-line no-console
+  console.log(PORT)
+));

@@ -1,39 +1,33 @@
+/* eslint-disable linebreak-style */
 const router = require('express').Router();
-const { Joi, celebrate, Segments } = require('celebrate');
-const { getUserProfile } = require('../controllers/users');
-
+const { celebrate, Joi } = require('celebrate');
 const {
+  getMe,
   getUsers,
+  getUserProfile,
+  updateUserInfo,
   updateAvatar,
-  updateProfile,
 } = require('../controllers/users');
 
-router.get('/', getUsers);
-router.get('/me', getUserProfile);
-
-router.patch(
-  '/me',
-  celebrate({
-    [Segments.BODY]: Joi.object().keys({
-      name: Joi.string().required(),
-      about: Joi.string().required(),
-    }),
+router.get('/users', getUsers);
+router.get('/users/me', getMe);
+router.get('/users/:userId', celebrate({
+  params: Joi.object().keys({
+    userId: Joi.string().length(24).hex(),
   }),
-  updateProfile
-);
+}), getUserProfile);
 
-router.patch(
-  '/me/avatar',
-  celebrate({
-    [Segments.BODY]: Joi.object().keys({
-      avatar: Joi.string()
-        .required()
-        .regex(
-          /^https?:\/\/(www\.)?[a-zA-Z0-9-.]+\.[a-z]{2,}\/[\S]+\.(png|jpg)/
-        ),
-    }),
+router.patch('/users/me', celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().required().min(2).max(30),
+    about: Joi.string().required().min(2).max(30),
   }),
-  updateAvatar
-);
+}), updateUserInfo);
+
+router.patch('/users/me/avatar', celebrate({
+  body: Joi.object().keys({
+    avatar: Joi.string().required().pattern(/^https?:\/\/(www\.)?([a-zA-Z0-9-])+\.([a-zA-Z])+\/?([a-zA-Z0-9\-_~:/#[\]@!&â€™,;=]+)/),
+  }),
+}), updateAvatar);
 
 module.exports = router;

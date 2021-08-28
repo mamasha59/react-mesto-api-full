@@ -1,36 +1,16 @@
 import React from 'react';
-import { bool, func, string } from 'prop-types';
-import successIcon from '../images/success-icon.svg';
-import failIcon from '../images/fail-icon.svg';
 
-InfoTooltip.propTypes = {
-  open: bool,
-  onClose: func,
-  success: bool,
-  title: string,
-};
+function InfoTooltip({isOpen, onClose, message}) {
 
-function InfoTooltip({ open, onClose, success, title }) {
-  return (
-    <div className={`popup popup_type_tooltip ${open ? 'popup_opened' : ''}`}>
-      <div className="popup__container">
-        <button
-          type="button"
-          aria-label="Закрыть"
-          className="popup__close btn btn_type_close"
-          onClick={onClose}
-        />
-        <div
-          className="popup__icon"
-          aria-label={success ? 'Успешная регистрация' : 'Ошибка регистрации'}
-          style={{
-            backgroundImage: `url(${success ? successIcon : failIcon})`,
-          }}
-        />
-        <h2 className="popup__title popup__title_place_register">{title}</h2>
-      </div>
-    </div>
-  );
+    return (
+        <div className={`popup popup_type_registration ${isOpen && 'popup_is-open'}`}>
+            <form className="popup__form" name="registration__form" action="#">
+              <button className="popup__close-btn" type="button" onClick={onClose} />
+              <img alt="sucessPopup" src={message.iconPath} className="popup__sucess-img"/>
+              <p className="popup__header">{message.text}</p>
+            </form>
+          </div>
+    );
 }
 
 export default InfoTooltip;

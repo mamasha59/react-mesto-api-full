@@ -1,27 +1,39 @@
-const { Schema, model, Types } = require('mongoose');
+/* eslint-disable linebreak-style */
+const mongoose = require('mongoose');
+const user = require('./user');
 
-const cardSchema = new Schema({
+const cardSchema = new mongoose.Schema({
   name: {
     type: String,
+    required: true,
     minlength: 2,
     maxlength: 30,
-    required: true,
   },
   link: {
     type: String,
-    required: true,
     validate: {
       validator(v) {
-        return /^https?:\/\/(www\.)?[a-zA-Z0-9-.]+\.[a-z]{2,}\/[\S]+\.(png|jpg)/gi.test(
-          v
-        );
+        // eslint-disable-next-line no-useless-escape
+        return /^https?:\/\/(www\.)?([a-zA-Z0-9\-])+\.([a-zA-Z])+\/?([a-zA-Z0-9\-\._~:\/\?#\[\]@!\$&’\(\)\*\+,;=]+)/.test(v);
       },
-      message: 'Не корректная ссылка на изображение',
+      message: (props) => `Ошибка в ссылке ${props.value}`,
     },
+    required: [true, 'Ошибки в ссылке нет'],
   },
-  owner: { type: Types.ObjectId, ref: 'User', required: true },
-  likes: [{ type: Types.ObjectId, ref: 'User' }],
-  createdAt: { type: Date, default: Date.now() },
+  owner: {
+    type: mongoose.ObjectId,
+    required: true,
+    ref: user,
+  },
+  likes: [{
+    type: mongoose.ObjectId,
+    ref: user,
+    default: [],
+  }],
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
-module.exports = model('Card', cardSchema);
+module.exports = mongoose.model('card', cardSchema);

@@ -1,14 +1,3 @@
-import { createContext } from 'react';
-import spinner from '../images/spinner.svg';
+import React from "react";
 
-export const INITIAL_USER_STATE = {
-  _id: null,
-  email: '',
-  name: 'Загрузка...',
-  about: '',
-  avatar: spinner,
-};
-
-const CurrentUserContext = createContext(INITIAL_USER_STATE);
-
-export default CurrentUserContext;
+export const CurrentUserContext = React.createContext();

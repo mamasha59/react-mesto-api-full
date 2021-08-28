@@ -1,52 +1,30 @@
-import React from 'react';
-import PopupWithForm from './PopupWithForm';
-import { func, bool } from 'prop-types';
+import React from "react";
+import PopupWithForm from "./PopupWithForm";
+import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
-EditAvatarPopup.propTypes = {
-  onClose: func.isRequired,
-  onUpdateAvatar: func.isRequired,
-  open: bool,
-  submitting: bool,
-};
+function EditAvatarPopup({isOpen, onClose, onUpdateAvatar}) {
 
-function EditAvatarPopup({
-  onClose,
-  onUpdateAvatar,
-  open = false,
-  submitting = false,
-}) {
-  const ref = React.useRef();
+    const currentUser = React.useContext(CurrentUserContext);
+    const avatarRef = React.useRef();
 
-  const handleSubmit = (evt) => {
-    evt.preventDefault();
+    function handleSubmit() {
+        onUpdateAvatar({
+            avatar: avatarRef.current.value
+        });
+      } 
 
-    onUpdateAvatar({
-      avatar: ref.current.value,
-    });
-  };
-
-  return (
-    <PopupWithForm
-      title="Обновить аватар"
-      name="update-profile"
-      isOpen={open}
-      onClose={onClose}
-      onSubmit={handleSubmit}
-      submitting={submitting}
-    >
-      <label className="form__field">
-        <input
-          ref={ref}
-          type="url"
-          name="avatar"
-          id="avatar-input"
-          className="form__input form__input_type_link form__input_style_light"
-          required
-        />
-        <span className="form__input-error avatar-input-error" />
-      </label>
-    </PopupWithForm>
-  );
+      React.useEffect(() => {
+        avatarRef.current.value = currentUser.avatar;
+      }, [currentUser]);
+      
+      
+    return (
+        <PopupWithForm onSubmit={handleSubmit} name="edit-avatar" title="Обновить аватар" buttonTitle="Сохранить" isOpen={isOpen} onClose={onClose}>
+              <input ref={avatarRef} type="url" name="image-src" id="image-src"  className="popup__input popup__source" placeholder="Ссылка на картинку" required />
+                  <span className="popup__error popup__error_is-active" id="image-src-error" />
+                </PopupWithForm> 
+    )
 }
 
 export default EditAvatarPopup;
+

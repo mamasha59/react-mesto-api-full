@@ -1,28 +1,26 @@
-const jsonwebtoken = require('jsonwebtoken');
-const UnauthorizedError = require('../utils/httpErrors/UnauthorizedError');
+/* eslint-disable linebreak-style */
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
-module.exports = function auth(req, res, next) {
-  try {
-    const JWT_SECRET =
-      process.env.NODE_ENV !== 'production'
-        ? 'dev-key'
-        : process.env.JWT_SECRET;
-    const { jwt } = req.cookies;
+const { NODE_ENV, JWT_SECRET } = process.env;
 
-    if (!jwt) {
-      throw new UnauthorizedError('Не авторизован');
-    }
+// eslint-disable-next-line consistent-return
+module.exports = (req, res, next) => {
+  const { authorization } = req.headers;
 
-    jsonwebtoken.verify(jwt, JWT_SECRET, (err, decoded) => {
-      if (err) {
-        throw new UnauthorizedError(err.message);
-      }
-
-      req.user = decoded._id;
-    });
-
-    return next();
-  } catch (e) {
-    return next(e);
+  if (!authorization || !authorization.startsWith('Bearer ')) {
+    return res.status(401).send({ message: 'Необходима авторизация' });
   }
+
+  const token = authorization.replace('Bearer ', '');
+  let payload;
+  try {
+    payload = jwt.verify(token, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret');
+  } catch (err) {
+    return res.status(401).send({ message: 'Необходима авторизация' });
+  }
+
+  req.user = payload;
+
+  next();
 };

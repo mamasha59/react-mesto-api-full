@@ -1,48 +1,37 @@
 {
-  "name": "mesto-server",
+  "name": "express-mesto",
   "version": "1.0.0",
-  "description": "Бек-енд проекта Mesto",
+  "description": "",
   "main": "app.js",
   "scripts": {
-    "lint": "npx eslint",
     "start": "node app.js",
     "dev": "nodemon app.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/enslit/mesto-server.git"
+    "url": "git+https://github.com/mamasha59/react-mesto-api-full.git"
   },
-  "keywords": [
-    "nodejs",
-    "mongodb",
-    "mesto"
-  ],
-  "author": "Aleksandr Emelianov <alex@enslit.ru>",
+  "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/enslit/mesto-server/issues"
-  },
-  "homepage": "https://github.com/enslit/mesto-server#readme",
-  "devDependencies": {
-    "eslint": "^7.27.0",
-    "eslint-config-airbnb-base": "^14.2.1",
-    "eslint-plugin-import": "^2.23.3",
-    "nodemon": "^2.0.7",
-    "prettier": "^2.3.0"
-  },
   "dependencies": {
-    "bcrypt": "^5.0.1",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
     "celebrate": "^14.0.0",
-    "cookie-parser": "^1.4.5",
-    "cors": "^2.8.5",
-    "dotenv": "^10.0.0",
+    "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-rate-limit": "^5.2.6",
     "express-winston": "^4.1.0",
-    "helmet": "^4.6.0",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.12.10",
-    "validator": "^13.6.0",
+    "mongoose": "^5.12.2",
+    "validator": "^13.5.2",
     "winston": "^3.3.3"
-  }
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7",
+    "eslint": "^7.19.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.22.1"
+
+  },
+  "keywords": []
 }

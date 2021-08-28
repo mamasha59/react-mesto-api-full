@@ -1,76 +1,94 @@
-const Cards = require('../models/card');
-const NotFountError = require('../utils/httpErrors/NotFountError');
-const ForbiddenError = require('../utils/httpErrors/ForbiddenError');
+/* eslint-disable linebreak-style */
+/* eslint-disable no-unused-vars */
 
-module.exports.getCards = (req, res, next) =>
-  Cards.find({})
-    .populate('owner')
-    .populate('likes')
-    .then((cards) => res.json(cards))
+const Card = require('../models/card');
+const NotFoundError = require('../errors/not-found-err');
+const BadRequest = require('../errors/bad-request');
+const Forbidden = require('../errors/forbidden');
+
+// Получить список всех карточек
+const getCards = (req, res, next) => {
+  Card.find({})
+    .then((cards) => {
+      if (!cards) {
+        throw new NotFoundError('Запрашиваемый файл не найден');
+      }
+
+      res.status(200).send(cards);
+    })
     .catch(next);
+};
 
-module.exports.deleteCard = (req, res, next) =>
-  Cards.findById(req.params.cardId)
-    .exec()
+// Создать карточку
+const createCard = (req, res, next) => {
+  const owner = req.user._id;
+  const { name, link } = req.body;
+
+  Card.create({ name, link, owner })
     .then((card) => {
       if (!card) {
-        throw new NotFountError(
-          `Карточка с ID: ${req.params.cardId} не найдена`
-        );
+        throw new BadRequest('Данные не прошли валидацию');
       }
-
-      if (String(card.owner) !== req.user) {
-        throw new ForbiddenError('Нарушение доступа');
-      }
-
-      return Cards.findByIdAndDelete(req.params.cardId);
+      res.status(200).send(card);
     })
-    .then((card) => res.json(card))
     .catch(next);
+};
 
-module.exports.createCard = (req, res, next) =>
-  Cards.create({ name: req.body.name, link: req.body.link, owner: req.user })
-    .then((card) => card.populate('owner').populate('likes').execPopulate())
-    .then((cardWithPopulate) =>
-      res.status(201).json({ ...cardWithPopulate._doc })
-    )
-    .catch(next);
+// Удалить карточку
+const deleteCard = (req, res, next) => {
+  const owner = req.user._id;
 
-module.exports.likeCard = (req, res, next) =>
-  Cards.findByIdAndUpdate(
+  Card.findById(req.params.cardId)
+    .then((card) => {
+      if (!card) {
+        throw new NotFoundError('Карточка не найдена');
+      }
+      if (card.owner.toString() !== owner) {
+        throw new Forbidden('Невозможно удалить карточку - ошибка доступа');
+      }
+      Card.findByIdAndRemove(req.params.cardId)
+        .then(() => res.status(200).send({ message: 'Карточка удалена' }));
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new NotFoundError('Id карточки не валидный'));
+      }
+      next(err);
+    });
+};
+
+// Поставить карточке лайк
+const putLike = (req, res, next) => {
+  Card.findByIdAndUpdate(
     req.params.cardId,
-    { $addToSet: { likes: req.user } },
-    { new: true }
+    { $addToSet: { likes: req.user._id } },
+    { new: true },
   )
-    .populate('likes')
-    .populate('owner')
-    .exec()
     .then((card) => {
       if (!card) {
-        throw new NotFountError(
-          `Карточка с ID: ${req.params.cardId} не найдена`
-        );
+        throw new NotFoundError('Id карточки не валидный');
       }
-
-      return res.json(card);
+      res.status(200).send(card);
     })
     .catch(next);
+};
 
-module.exports.dislikeCard = (req, res, next) =>
-  Cards.findByIdAndUpdate(
+// Удалить у карточки лайк
+const deleteLike = (req, res, next) => {
+  Card.findByIdAndUpdate(
     req.params.cardId,
-    { $pull: { likes: req.user } },
-    { new: true }
+    { $pull: { likes: req.user._id } },
+    { new: true },
   )
-    .populate('likes')
-    .populate('owner')
-    .exec()
     .then((card) => {
       if (!card) {
-        throw new NotFountError(
-          `Карточка с ID: ${req.params.cardId} не найдена`
-        );
+        throw new NotFoundError('Id карточки не валидный');
       }
-      return res.json(card);
+      res.status(200).send(card);
     })
     .catch(next);
+};
+
+module.exports = {
+  getCards, createCard, deleteCard, putLike, deleteLike,
+};

@@ -1,64 +1,48 @@
 import React from 'react';
-import { func, bool } from 'prop-types';
-import FormInput from './Form/FormInput';
-import Form from './Form/Form';
-import SubmitButton from './Form/SubmitButton';
+import Footer from "./Footer"
 
-Login.propTypes = {
-  onLogin: func,
-  fetching: bool,
-};
 
-function Login({ onLogin }) {
-  return (
-    <main className="content">
-      <Form
-        name="sign-in"
-        className="form form_type_auth"
-        initFormValues={{
-          email: '',
-          password: '',
-        }}
-        onSubmit={onLogin}
-      >
-        {({ form, state, handleInput }) => (
-          <>
-            <div className="form__body">
-              <h1 className="form__title">Вход</h1>
-              <FormInput
-                type="email"
-                name="email"
-                placeholder="Email"
-                id="username-input"
-                className="form__input form__input_type_email form__input_style_dark"
-                required
-                onChange={handleInput}
-                value={form.email.value}
-              />
-              <FormInput
-                type="password"
-                name="password"
-                placeholder="Пароль"
-                id="password-input"
-                className="form__input form__input_type_password form__input_style_dark"
-                required
-                onChange={handleInput}
-                value={form.password.value}
-              />
+function Login({ handleLogin }) {
+  
+  const [valueEmail, setValueEmail] = React.useState('');
+  const [valuePassword, setValuePassword] = React.useState('');
+
+  function handleChangeEmail(e) {
+    setValueEmail(e.target.value);
+  }
+
+  function handleChangePassword(e) {
+    setValuePassword(e.target.value);
+  }
+
+  function handleSubmit(e){
+    e.preventDefault()
+    const email = valueEmail;
+    const password = valuePassword;
+
+    handleLogin(email,password);
+  }
+
+    
+  
+      return (
+          <div className="page">
+          <div className="page__content">
+          <main className="content">
+          <div>
+              <form className="login__form" onSubmit={handleSubmit}>
+                <p className="login__header">Вход</p>
+                <input name="email" value={valueEmail} className="login__input" placeholder="Email" type="email" onChange={handleChangeEmail} required />
+                <input name="password" value={valuePassword} className="login__input" placeholder="Пароль" type="password"  onChange={handleChangePassword} required />
+                  <span className="popup__error popup__error_is-active" id="image-src-error" />
+                <button type="submit" className="login__button">Войти</button>
+              </form>
             </div>
-            <div className="form__actions">
-              <SubmitButton
-                title="Войти"
-                disabled={!state.valid}
-                isFetching={state.submitting}
-                style="dark"
-              />
-            </div>
-          </>
-        )}
-      </Form>
-    </main>
-  );
+        </main>
+        <Footer />
+        </div>
+        </div>
+      )
 }
 
 export default Login;
