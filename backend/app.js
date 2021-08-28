@@ -13,7 +13,7 @@ const { NotFoundError } = require('./utils/httpErrors');
 const { createUser, login } = require('./controllers/users');
 
 const {
-  SERVER_PORT = 5000,
+  SERVER_PORT = 3000,
   DB_HOST = 'localhost',
   DB_PORT = 27017,
   DB_NAME = 'mestodb',
