@@ -1,50 +1,56 @@
-const express = require('express');
-const { celebrate, Joi } = require('celebrate');
-const { isURL } = require('validator');
-
-const cardRoutes = express.Router();
+const router = require('express').Router();
+const { Joi, celebrate, Segments } = require('celebrate');
 const {
-  getCards, deleteCardById, createCard, likeCard, dislikeCard,
+  getCards,
+  deleteCard,
+  createCard,
+  likeCard,
+  dislikeCard,
 } = require('../controllers/cards');
 
-// вернуть все карточки
-cardRoutes.get('/', getCards);
+router.get('/', getCards);
 
-// удалить карточку по id
-cardRoutes.delete('/:cardId', celebrate({
-  params: Joi.object().keys({
-    cardId: Joi.string().hex().length(24),
-  }).unknown(true),
-}), deleteCardById);
-
-// создать карточку
-const checkURL = (val, helper) => {
-  if (!isURL(val, { require_protocol: true })) {
-    return helper.message('Не валидный URL');
-  }
-
-  return val;
-};
-cardRoutes.post('/', celebrate({
-  body: Joi.object().keys({
-    name: Joi.string().required().min(2).max(30),
-    link: Joi.string().custom(checkURL, 'invalid URL').required(),
-    createdAt: Joi.date(),
+router.post(
+  '/',
+  celebrate({
+    [Segments.BODY]: Joi.object().keys({
+      name: Joi.string().required(),
+      link: Joi.string().required().regex(
+        /^https?:\/\/(www\.)?[a-zA-Z0-9-.]+\.[a-z]{2,}\/[\S]+\.(png|jpg)/
+      ),
+    }),
   }),
-}), createCard);
+  createCard
+);
 
-// поставить лайк карточке
-cardRoutes.put('/:cardId/likes', celebrate({
-  params: Joi.object().keys({
-    cardId: Joi.string().hex().length(24),
-  }).unknown(true),
-}), likeCard);
+router.delete(
+  '/:cardId',
+  celebrate({
+    [Segments.PARAMS]: Joi.object().keys({
+      cardId: Joi.string().length(24).hex().required(),
+    }),
+  }),
+  deleteCard
+);
 
-// убрать лайк с карточки
-cardRoutes.delete('/:cardId/likes', celebrate({
-  params: Joi.object().keys({
-    cardId: Joi.string().hex().length(24),
-  }).unknown(true),
-}), dislikeCard);
+router.put(
+  '/:cardId/likes',
+  celebrate({
+    [Segments.PARAMS]: Joi.object().keys({
+      cardId: Joi.string().length(24).hex().required(),
+    }),
+  }),
+  likeCard
+);
 
-exports.cardRoutes = cardRoutes;
+router.delete(
+  '/:cardId/likes',
+  celebrate({
+    [Segments.PARAMS]: Joi.object().keys({
+      cardId: Joi.string().length(24).hex().required(),
+    }),
+  }),
+  dislikeCard
+);
+
+module.exports = router;

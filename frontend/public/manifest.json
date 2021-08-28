@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Mesto react",
+  "name": "Учебный проект по курсу Яндекс.Практикум",
   "icons": [
     {
       "src": "favicon.ico",
@@ -10,12 +10,12 @@
     {
       "src": "logo192.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "192x45"
     },
     {
-      "src": "logo512.png",
+      "src": "logo444.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "444x103"
     }
   ],
   "start_url": ".",

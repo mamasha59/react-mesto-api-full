@@ -1,93 +1,99 @@
-require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
-const helmet = require('helmet');
-const { celebrate, Joi } = require('celebrate');
-const { errors } = require('celebrate');
-const { isURL } = require('validator');
 const cors = require('cors');
-const { routes } = require('./routes/index');
-const { login, createUser } = require('./controllers/users');
-const NotFoundError = require('./errors/not-found-error');
-
-const { PORT = 3000 } = process.env;
-const app = express();
-const auth = require('./middlewares/auth');
+const cookieParser = require('cookie-parser');
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
+const { Joi, celebrate, Segments, errors } = require('celebrate');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+require('dotenv').config();
+const auth = require('./middlewares/auth');
+const clientErrorHandler = require('./middlewares/clientErrorHandler');
+const { NotFoundError } = require('./utils/httpErrors');
+const { createUser, login } = require('./controllers/users');
 
-mongoose.connect('mongodb://localhost:27017/mestodb', {
-  useNewUrlParser: true,
-  useCreateIndex: true,
-  useFindAndModify: false,
+const {
+  SERVER_PORT = 5000,
+  DB_HOST = 'localhost',
+  DB_PORT = 27017,
+  DB_NAME = 'mestodb',
+} = process.env;
+const app = express();
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 50,
 });
 
+app.use(
+  cors({
+    origin: [
+      'http://localhost:3000',
+      'http://enslit.nomoredomains.monster',
+      'https://enslit.nomoredomains.monster',
+    ],
+    credentials: true,
+  })
+);
+app.use(express.json());
+app.use(cookieParser());
+app.use(requestLogger);
+app.use(limiter);
 app.use(helmet());
 
-app.use(express.json());
-app.use(cors());
-
-app.use(requestLogger); // подключаем логгер запросов
-
-app.get('/crash-test', () => {
-  setTimeout(() => {
-    throw new Error('Сервер сейчас упадёт');
-  }, 0);
-});
-
-app.post('/signin', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().email().required(),
-    password: Joi.string().required(),
+app.post(
+  '/api/signin',
+  celebrate({
+    [Segments.BODY]: Joi.object().keys({
+      email: Joi.string().required().email(),
+      password: Joi.string().required().min(6),
+    }),
   }),
-}), login);
+  login
+);
 
-const checkURL = (val, helper) => {
-  if (!isURL(val, { require_protocol: true })) {
-    return helper.message('Не валидный URL');
-  }
-
-  return val;
-};
-
-app.post('/signup', celebrate({
-  body: Joi.object().keys({
-    name: Joi.string().min(2).max(30).default('Жак-Ив Кусто'),
-    about: Joi.string().min(2).max(30).default('Исследователь'),
-    avatar: Joi.string().custom(checkURL, 'invalid URL').default('https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png'),
-    email: Joi.string().email().required(),
-    password: Joi.string().required(),
+app.post(
+  '/api/signup',
+  celebrate({
+    [Segments.BODY]: Joi.object().keys({
+      email: Joi.string().required().email(),
+      password: Joi.string().required().min(6),
+      name: Joi.string(),
+      about: Joi.string(),
+      avatar: Joi.string().regex(
+        /^https?:\/\/(www\.)?[a-zA-Z0-9-.]+\.[a-z]{2,}\/[\S]+\.(png|jpg)/
+      ),
+    }),
   }),
-}), createUser);
+  createUser
+);
 
-app.use(auth);
+app.use('/api/users', auth, require('./routes/users'));
+app.use('/api/cards', auth, require('./routes/cards'));
 
-app.use('/', routes);
-
-app.use((req, res, next) => {
-  next(new NotFoundError('Ресурс не найден'));
+app.use(() => {
+  throw new NotFoundError('Запрашиваемый ресурс не найден');
 });
 
-app.use(errorLogger); // подключаем логгер ошибок
+app.use(errorLogger);
+app.use(errors());
+app.use(clientErrorHandler);
 
-// обработчики ошибок
-app.use(errors()); // обработчик ошибок celebrate
+mongoose
+  .connect(`mongodb://${DB_HOST}:${DB_PORT}/${DB_NAME}`, {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useFindAndModify: false,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log('Соединение с базой данных установлено');
+  })
+  .catch((error) => {
+    console.error(error.message);
+    process.exit(1);
+  });
 
-// централизованный обработчик
-app.use((err, req, res, next) => {
-  // если у ошибки нет статуса, выставляем 500
-  const { statusCode = 500, message } = err;
-
-  res
-    .status(statusCode)
-    .send({
-      // проверяем статус и выставляем сообщение в зависимости от него
-      message: statusCode === 500
-        ? 'На сервере произошла ошибка'
-        : message,
-    });
-  next();
-});
-
-app.listen(PORT, () => {
-  console.log(`App listening on port ${PORT}`);
+app.listen(SERVER_PORT, () => {
+  console.log('Сервер был запущен на порту', SERVER_PORT);
 });

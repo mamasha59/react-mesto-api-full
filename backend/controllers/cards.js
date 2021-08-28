@@ -1,78 +1,76 @@
-const mongoose = require('mongoose');
-const Card = require('../models/card');
-const NotFoundError = require('../errors/not-found-error');
-const BadRequestError = require('../errors/bad-request-error');
+const Cards = require('../models/card');
+const NotFountError = require('../utils/httpErrors/NotFountError');
+const ForbiddenError = require('../utils/httpErrors/ForbiddenError');
 
-const getCards = async (req, res, next) => {
-  try {
-    const allCards = await Card.find({}).sort({ createAt: -1 });
-    res.status(200).send(allCards);
-  } catch (err) {
-    next(err);
-  }
-};
+module.exports.getCards = (req, res, next) =>
+  Cards.find({})
+    .populate('owner')
+    .populate('likes')
+    .then((cards) => res.json(cards))
+    .catch(next);
 
-const deleteCardById = async (req, res, next) => {
-  try {
-    const card = await Card.findById(req.params.cardId)
-      .orFail(new NotFoundError('Объект не найден'));
-    if (card.owner.toString() !== req.user._id) {
-      throw new BadRequestError('Пользователь не имеет прав на удаление данной карточки');
-    }
+module.exports.deleteCard = (req, res, next) =>
+  Cards.findById(req.params.cardId)
+    .exec()
+    .then((card) => {
+      if (!card) {
+        throw new NotFountError(
+          `Карточка с ID: ${req.params.cardId} не найдена`
+        );
+      }
 
-    const cardWithId = await Card.findByIdAndDelete(req.params.cardId)
-      .orFail(new NotFoundError('Объект не найден'));
-    res.status(200).send(cardWithId);
-  } catch (err) {
-    next(err);
-  }
-};
+      if (String(card.owner) !== req.user) {
+        throw new ForbiddenError('Нарушение доступа');
+      }
 
-const createCard = async (req, res, next) => {
-  const { name, link } = req.body;
+      return Cards.findByIdAndDelete(req.params.cardId);
+    })
+    .then((card) => res.json(card))
+    .catch(next);
 
-  try {
-    const card = new Card({ name, link, likes: [] });
-    card.owner = new mongoose.Types.ObjectId(req.user._id);
-    await card.save();
-    res.send(card);
-  } catch (err) {
-    if (err.name === 'ValidationError') {
-      next(new BadRequestError('Переданы некорректные данные'));
-      return;
-    }
-    next(err);
-  }
-};
-
-const likeCard = async (req, res, next) => {
-  try {
-    const like = await Card.findByIdAndUpdate(
-      req.params.cardId,
-      { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
-      { new: true },
+module.exports.createCard = (req, res, next) =>
+  Cards.create({ name: req.body.name, link: req.body.link, owner: req.user })
+    .then((card) => card.populate('owner').populate('likes').execPopulate())
+    .then((cardWithPopulate) =>
+      res.status(201).json({ ...cardWithPopulate._doc })
     )
-      .orFail(new NotFoundError('Объект не найден'));
-    res.status(200).send(like);
-  } catch (err) {
-    next(err);
-  }
-};
+    .catch(next);
 
-const dislikeCard = async (req, res, next) => {
-  try {
-    const dislike = await Card.findByIdAndUpdate(
-      req.params.cardId,
-      { $pull: { likes: req.user._id } }, // убрать _id из массива
-      { new: true },
-    )
-      .orFail(new NotFoundError('Объект не найден'));
-    res.status(200).send(dislike);
-  } catch (err) {
-    next(err);
-  }
-};
+module.exports.likeCard = (req, res, next) =>
+  Cards.findByIdAndUpdate(
+    req.params.cardId,
+    { $addToSet: { likes: req.user } },
+    { new: true }
+  )
+    .populate('likes')
+    .populate('owner')
+    .exec()
+    .then((card) => {
+      if (!card) {
+        throw new NotFountError(
+          `Карточка с ID: ${req.params.cardId} не найдена`
+        );
+      }
 
-module.exports = {
-  getCards, deleteCardById, createCard, likeCard, dislikeCard,
-};
+      return res.json(card);
+    })
+    .catch(next);
+
+module.exports.dislikeCard = (req, res, next) =>
+  Cards.findByIdAndUpdate(
+    req.params.cardId,
+    { $pull: { likes: req.user } },
+    { new: true }
+  )
+    .populate('likes')
+    .populate('owner')
+    .exec()
+    .then((card) => {
+      if (!card) {
+        throw new NotFountError(
+          `Карточка с ID: ${req.params.cardId} не найдена`
+        );
+      }
+      return res.json(card);
+    })
+    .catch(next);

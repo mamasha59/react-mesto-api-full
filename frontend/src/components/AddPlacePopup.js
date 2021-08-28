@@ -1,55 +1,98 @@
-import React from "react";
-import PopupWithForm from "./PopupWithForm";
+import React, { useEffect, useState } from 'react';
+import PopupWithForm from './PopupWithForm';
+import FormInput from './Form/FormInput';
+import { func, bool } from 'prop-types';
 
-function AddPlacePopup(props) {
+AddPlacePopup.propTypes = {
+  onClose: func.isRequired,
+  onAddPlace: func.isRequired,
+  open: bool,
+  submitting: bool,
+};
 
-  const [title, setTitle] = React.useState('');
-  const [link, setLink] = React.useState('');
+function AddPlacePopup({
+  onClose,
+  onAddPlace,
+  submitting = false,
+  open = false,
+}) {
+  const defaultFormState = {
+    name: {
+      value: '',
+      valid: false,
+    },
+    link: {
+      value: '',
+      valid: false,
+    },
+  };
+  const [form, setForm] = useState(defaultFormState);
+  const [formValid, setFormValid] = useState(false);
 
-  function handleChangeTitle(e) {
-    setTitle(e.target.value);
-  }
+  const handleClose = () => {
+    setForm(defaultFormState);
+    onClose();
+  };
 
-  function handleChangeLink(e) {
-    setLink(e.target.value);
-  }
-
-  function handleSubmit(e) {
-    // Запрещаем браузеру переходить по адресу формы
-    e.preventDefault();
-
-    // Передаём значения управляемых компонентов во внешний обработчик
-    props.onAddPlace({
-      name: title,
-      link: link,
+  const handleInput = (value, name, valid) => {
+    setForm({
+      ...form,
+      [name]: { value, valid },
     });
+  };
 
-    setTitle('');
-    setLink('');
-  }
+  const clearForm = () => {
+    setForm(defaultFormState);
+  };
+
+  const handleSubmit = (evt) => {
+    evt.preventDefault();
+    const { name, link } = form;
+    onAddPlace({ name: name.value, link: link.value }, clearForm);
+  };
+
+  useEffect(() => {
+    if (form.name.valid && form.link.valid) {
+      setFormValid(true);
+    } else {
+      setFormValid(false);
+    }
+  }, [form]);
 
   return (
-    <PopupWithForm name="place" title="Новое место" isAddPlacePopupOpen={props.isOpen}
-                   closeAllPopups={props.onClose} onSubmit={handleSubmit}>
-      <label>
-        <input id="place-input" type="text" name="place-title" value={title} onChange={handleChangeTitle}
-               className="popup__input popup__input_small popup__input-place-title"
-               placeholder="Название" required minLength="2" maxLength="30"/>
-        <span className="popup__input-error place-input-error">
-        </span>
-      </label>
-      <label>
-        <input id="link-input" type="url" name="image" value={link} onChange={handleChangeLink}
-               className="popup__input popup__input_small popup__input-image"
-               placeholder="Ссылка на картинку" required pattern="https?://.+"/>
-        <span className="popup__input-error link-input-error">
-        </span>
-      </label>
-      <button type="submit" className="popup__button popup__button_small popup__button-place"
-              onClick={props.onClose}>Создать
-      </button>
+    <PopupWithForm
+      title="Новое место"
+      name="add-card"
+      isOpen={open}
+      disabled={!formValid}
+      onClose={handleClose}
+      onSubmit={handleSubmit}
+      submitting={submitting}
+    >
+      <FormInput
+        value={form.name.value}
+        onChange={handleInput}
+        type="text"
+        name="name"
+        id="place-input"
+        placeholder="Название"
+        className="form__input form__input_style_light form__input_type_card-name"
+        required
+        minLength="2"
+        maxLength="30"
+      />
+      <FormInput
+        value={form.link.value}
+        onChange={handleInput}
+        type="url"
+        name="link"
+        id="link-input"
+        placeholder="Ссылка на картинку"
+        className="form__input form__input_style_light form__input_type_link"
+        required
+      />
     </PopupWithForm>
-  )
+  );
 }
 
-export default AddPlacePopup
+export default AddPlacePopup;

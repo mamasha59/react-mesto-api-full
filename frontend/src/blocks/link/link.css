@@ -1,10 +1,10 @@
 .link {
-    color: #FFFFFF;
     text-decoration: none;
+    color: #fff;
+    transition: opacity 200ms ease-in-out;
 }
 
 .link:hover {
-    opacity: 60%;
+    opacity: .6;
     cursor: pointer;
-    transition: opacity linear 2s;
 }

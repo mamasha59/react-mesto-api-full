@@ -1,8 +1,0 @@
-.elements__name {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    margin: 25px 0 27px 0;
-    padding: 0 15px 0 21px;
-}

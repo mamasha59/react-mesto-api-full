@@ -1,40 +1,27 @@
-const mongoose = require('mongoose');
-const { isURL } = require('validator');
+const { Schema, model, Types } = require('mongoose');
 
-// схема для карточки
-const cardSchema = new mongoose.Schema({
+const cardSchema = new Schema({
   name: {
     type: String,
+    minlength: 2,
+    maxlength: 30,
     required: true,
-    minlength: [2, 'Минимальная длина 2 символа'],
-    maxlength: [30, 'Максимальная длина 30 символов'],
   },
-
   link: {
     type: String,
     required: true,
-    validate: [isURL, { require_protocol: true }, 'invalid URL'],
+    validate: {
+      validator(v) {
+        return /^https?:\/\/(www\.)?[a-zA-Z0-9-.]+\.[a-z]{2,}\/[\S]+\.(png|jpg)/gi.test(
+          v
+        );
+      },
+      message: 'Не корректная ссылка на изображение',
+    },
   },
-
-  owner: {
-    type: mongoose.ObjectId,
-    required: true,
-  },
-
-  likes: {
-    type: [mongoose.ObjectId],
-    default: [],
-  },
-
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
+  owner: { type: Types.ObjectId, ref: 'User', required: true },
+  likes: [{ type: Types.ObjectId, ref: 'User' }],
+  createdAt: { type: Date, default: Date.now() },
 });
 
-cardSchema.path('link').validate((val) => {
-  const urlRegex = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-/]))?/;
-  return urlRegex.test(val);
-}, 'Invalid URL.');
-
-module.exports = mongoose.model('card', cardSchema);
+module.exports = model('Card', cardSchema);

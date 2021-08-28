@@ -1,32 +1,52 @@
-import React from "react";
-import PopupWithForm from "./PopupWithForm";
+import React from 'react';
+import PopupWithForm from './PopupWithForm';
+import { func, bool } from 'prop-types';
 
-function EditAvatarPopup(props) {
-  const avatarRef = React.useRef('');
+EditAvatarPopup.propTypes = {
+  onClose: func.isRequired,
+  onUpdateAvatar: func.isRequired,
+  open: bool,
+  submitting: bool,
+};
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    props.onUpdateAvatar({
-      avatar: avatarRef.current.value
+function EditAvatarPopup({
+  onClose,
+  onUpdateAvatar,
+  open = false,
+  submitting = false,
+}) {
+  const ref = React.useRef();
+
+  const handleSubmit = (evt) => {
+    evt.preventDefault();
+
+    onUpdateAvatar({
+      avatar: ref.current.value,
     });
-    avatarRef.current.value = '';
-  }
+  };
 
   return (
-    <PopupWithForm name="avatar" title="Обновить аватар?" isEditAvatarPopupOpen={props.isOpen}
-                   closeAllPopups={props.onClose} onSubmit={handleSubmit}>
-      <label>
-        <input id="input" type="url" name="image" ref={avatarRef}
-               className="popup__input popup__input_small popup__input-image"
-               placeholder="Ссылка на картинку" required pattern="https?://.+"/>
-        <span className="popup__input-error input-error">
-              </span>
+    <PopupWithForm
+      title="Обновить аватар"
+      name="update-profile"
+      isOpen={open}
+      onClose={onClose}
+      onSubmit={handleSubmit}
+      submitting={submitting}
+    >
+      <label className="form__field">
+        <input
+          ref={ref}
+          type="url"
+          name="avatar"
+          id="avatar-input"
+          className="form__input form__input_type_link form__input_style_light"
+          required
+        />
+        <span className="form__input-error avatar-input-error" />
       </label>
-      <button type="submit" className="popup__button popup__button_small popup__button-place"
-              onClick={props.onClose}>Создать
-      </button>
     </PopupWithForm>
-  )
+  );
 }
 
-export default EditAvatarPopup
+export default EditAvatarPopup;
