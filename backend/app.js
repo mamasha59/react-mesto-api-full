@@ -43,7 +43,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-const allowedCors = [
+const allowedCors = [ // ----доступные ссылки
   'localhost:3000',
   'https://future.bright.nomoredomains.club',
   'http://future.bright.nomoredomains.club',
