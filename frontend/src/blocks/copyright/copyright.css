@@ -1,0 +1,16 @@
+.copyright {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-weight: normal;
+    font-style: normal;
+    font-size: 18px;
+    line-height: 1.22;
+    color: #545454;
+}
+
+@media screen and (max-width: 425px) {
+    .copyright {
+        font-size: 14px;
+    }
+}

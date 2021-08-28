@@ -1,21 +1,40 @@
-//  --файл маршрутов
-const routes = require('express').Router();
-const {
-  validationUserId, avatarValidation, usrMeValidation,
-} = require('../middlewares/serverValidationForData');
+const router = require('express').Router();
+const { celebrate, Joi } = require('celebrate');
+const validator = require('validator');
+
+const method = (value) => {
+  const result = validator.isURL(value);
+  if (result) {
+    return value;
+  }
+  throw new Error('Это не похоже на URL');
+};
 
 const {
-  getUser, getUsers, updateUserInfo, updateUserAvatar, getUserInfo,
+  getAllUsers,
+  getUser,
+  getOwner,
+  updateProfile,
+  updateAvatar,
 } = require('../controllers/users');
 
-routes.get('/me', getUserInfo); // --- информация текущего пользователя
+router.get('/', getAllUsers);
+router.get('/me', getOwner);
+router.get('/:userId', celebrate({
+  body: Joi.object().keys({
+    userId: Joi.string().length(24).hex(),
+  }).unknown(true),
+}), getUser);
+router.patch('/me', celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().required().min(1),
+    about: Joi.string().required().min(1),
+  }).unknown(true),
+}), updateProfile);
+router.patch('/me/avatar', celebrate({
+  body: Joi.object().keys({
+    avatar: Joi.string().required().custom(method),
+  }).unknown(true),
+}), updateAvatar);
 
-routes.get('/:userId', validationUserId, getUser); // ---возвращает пользователя по _id
-
-routes.get('/', getUsers); //  ---возвращает всех пользователей
-
-routes.patch('/me', usrMeValidation, updateUserInfo); //  ---обновляет профиль
-
-routes.patch('/me/avatar', avatarValidation, updateUserAvatar); //  ---обновляет аватар
-
-module.exports = routes;
+module.exports = router;

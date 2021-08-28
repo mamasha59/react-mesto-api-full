@@ -1,82 +1,101 @@
 require('dotenv').config();
+
 const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+
+const rateLimit = require('express-rate-limit');
+const cookieParser = require('cookie-parser');
+
 const { errors } = require('celebrate');
-const userRoutes = require('./routes/users');
-const cardRoutes = require('./routes/cards');
-const { createUser, login } = require('./controllers/users');
+const { celebrate, Joi } = require('celebrate');
+
 const auth = require('./middlewares/auth');
-const { validationSignin, validationSignUp } = require('./middlewares/serverValidationForData');
-const NotFoundError = require('./errors/not-found');
+const errorHandler = require('./middlewares/errorHandler');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
-const options = {
-  origin: [
-    'http://localhost:3000',
-    'https://future.bright.nomoredomains.club',
-    'http://future.bright.nomoredomains.club',
-    'https://api.future.bright.nomoredomains.club/',
-    'http://api.future.bright.nomoredomains.club',
-    'https://github.com/mamasha59/react-mesto-api-full',
+const userRoutes = require('./routes/users');
+const cardRoutes = require('./routes/cards');
 
-  ],
-  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
-  preflightContinue: false,
-  optionsSuccessStatus: 204,
-  allowedHeaders: ['Content-Type', 'origin', 'Authorization'],
-  credentials: true,
-};
-
-const { PORT = 3000 } = process.env;
-const app = express();
-
-app.use('*', cors(options));
-
-app.use(helmet());
-
-app.use(express.json());
-
-app.use(cookieParser());
-
-app.use(requestLogger); // подключаем логгер запросов
+const NotFoundErr = require('./errors/not-found-err');
 
 mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false,
-  useUnifiedTopology: true,
 });
 
-app.get('/crash-test', () => { // ---краш тест
-  setTimeout(() => {
-    throw new Error('Сервер сейчас упадёт');
-  }, 0);
+const { PORT = 3000 } = process.env;
+const app = express();
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
 });
-app.post('/signin', validationSignin, login); // ----авторизация
-app.post('/signup', validationSignUp, createUser);// ----регистрация
+const {
+  createUser,
+  login,
+} = require('./controllers/users');
+
+app.use(requestLogger);
+app.use(limiter);
+app.use(helmet());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
+
+const allowedCors = [
+  'http://localhost:3000',
+  'https://future.bright.nomoredomains.club',
+  'http://future.bright.nomoredomains.club',
+  'https://api.future.bright.nomoredomains.club',
+  'http://api.future.bright.nomoredomains.club',
+  'https://github.com/mamasha59/react-mesto-api-full',
+];
+
+app.use((req, res, next) => {
+  const { origin } = req.headers;
+  if (allowedCors.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+  }
+  const { method } = req;
+  const DEFAULT_ALLOWED_METHODS = 'GET,HEAD,PUT,PATCH,POST,DELETE';
+  if (method === 'OPTIONS') {
+    res.header('Access-Control-Allow-Methods', DEFAULT_ALLOWED_METHODS);
+  }
+  const requestHeaders = req.headers['access-control-request-headers'];
+  if (method === 'OPTIONS') {
+    res.header('Access-Control-Allow-Headers', requestHeaders);
+  }
+
+  next();
+});
+
+app.post('/signin', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().min(6),
+    password: Joi.string().required().min(8).pattern(new RegExp('[a-zA-Z0-9S]')),
+  }).unknown(true),
+}), login);
+app.post('/signup', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().min(6),
+    password: Joi.string().required().min(8).pattern(new RegExp('[a-zA-Z0-9S]')),
+  }).unknown(true),
+}), createUser);
 
 app.use(auth);
+app.use('/users', userRoutes);
+app.use('/cards', cardRoutes);
 
-app.use('/users', userRoutes); // ---общие роуты
-app.use('/', cardRoutes); // ---общие роуты
-
-app.all('*', () => { // ---ошибка при несуществующем адресе
-  throw new NotFoundError('Запрашиваемый ресурс не найден');
+app.get('*', () => {
+  throw new NotFoundErr('Запрашиваемый ресурс не найден');
 });
 
-app.use(errorLogger); // подключаем логгер ошибок
+app.use(errorLogger);
 
 app.use(errors());
-// eslint-disable-next-line no-unused-vars
-app.use((err, req, res, next) => { // ---  централизованая ошибка
-  const { statusCode = 500, message } = err;
-  res.status(statusCode).send({
-    message:
-      statusCode === 500 ? 'Произошла ошибка на стороне сервера' : message,
-  });
-});
+
+app.use(errorHandler);
 
 app.listen(PORT);

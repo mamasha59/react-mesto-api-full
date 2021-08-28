@@ -1,0 +1,14 @@
+.elements__element {
+    margin: 0 auto;
+    padding: 0;
+    box-sizing: border-box;
+    width: 100%;
+    background-color: #ffffff;
+    border-radius: 10px;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(2, minmax(min-content, max-content));
+    grid-template-areas:
+    "photo"
+    "figcaption";
+}

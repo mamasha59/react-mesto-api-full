@@ -1,23 +1,48 @@
-//  --файл маршрутов
-const routes = require('express').Router();
-const { validationCardId, getCardValidation } = require('../middlewares/serverValidationForData');
+const router = require('express').Router();
+const { celebrate, Joi } = require('celebrate');
+const validator = require('validator');
+
+const method = (value) => {
+  const result = validator.isURL(value);
+  if (result) {
+    return value;
+  }
+  throw new Error('URL validation err');
+};
 
 const {
   createCard,
   getCards,
+  deleteCard,
   likeCard,
   dislikeCard,
-  deleteCard,
 } = require('../controllers/cards');
 
-routes.delete('/cards/:cardId', validationCardId, deleteCard); // ---удаляет карточку по _id
+router.get('/', getCards);
 
-routes.get('/cards', getCards); //  --- возвращает все карточки из базы
+router.delete('/:cardId', celebrate({
+  body: Joi.object().keys({
+    cardId: Joi.string().length(24).hex(),
+  }).unknown(true),
+}), deleteCard);
 
-routes.post('/cards', getCardValidation, createCard); // ---создаёт карточку с переданными в теле запроса name и link, устанавливает поле owner для карточки
+router.post('/', celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().required().min(1),
+    link: Joi.string().required().custom(method),
+  }).unknown(true),
+}), createCard);
 
-routes.put('/cards/:cardId/likes', validationCardId, likeCard); //  ---ставит лайк карточке
+router.put('/:cardId/likes', celebrate({
+  body: Joi.object().keys({
+    cardId: Joi.string().length(24).hex(),
+  }).unknown(true),
+}), likeCard);
 
-routes.delete('/cards/:cardId/likes', validationCardId, dislikeCard); //  --- убирает лайк с карточки
+router.delete('/:cardId/likes', celebrate({
+  body: Joi.object().keys({
+    cardId: Joi.string().length(24).hex(),
+  }).unknown(true),
+}), dislikeCard);
 
-module.exports = routes;
+module.exports = router;

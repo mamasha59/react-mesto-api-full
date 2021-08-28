@@ -1,0 +1,15 @@
+.popup__fields {
+    border: none;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 54px 0 48px;
+    box-sizing: border-box;
+    font-family: "Inter", sans-serif;
+}
+
+@media screen and (max-width: 768px) {
+    .popup__fields {
+        padding: 75px 22px 45px;
+    }
+}

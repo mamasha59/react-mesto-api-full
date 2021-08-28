@@ -1,25 +1,16 @@
-function PopupWithForm(props) {
+import React from 'react';
 
+function PopupWithForm ({name, title, value, children, isOpened, onClose, onSubmit, isLoading, isEnable}) {
     return (
-        <div className={`popup ${props.name} ${props.isOpen && 'popup_opened'}`}>
-            <form className="popup__container" name={props.name} onSubmit={props.onSubmit}>
-                <button
-                    className="popup__close-button button"
-                    type="button"
-                    aria-label="Закрыть попап"
-                    onClick={props.onClose}
-                ></button>
-                <h2 className="popup__title">{props.title}</h2>
-                {props.children}
-                <button
-                    className="popup__submit-button button popup__button"
-                    type='submit'
-                >
-                    {props.button}
-                </button>
-            </form>
-        </div>
-    );
+                <section className={`popup popup_${name} ${isOpened ? 'popup_opened' : ''}`}>
+                    <form className="popup__container" name={name} onSubmit={onSubmit}>
+                        <h2 className="popup__title">{title}</h2>
+                        {children}
+                        <button className={`popup__submitbtn ${!isEnable ? 'popup__submitbtn_disabled' : ''}`} disabled={!isEnable} type="submit" value={value}>{isLoading ? "Подождите..." : value}</button>
+                        <button className="popup__closebtn" type="button" onClick={onClose}></button>
+                    </form>
+                </section>
+        );
 }
 
 export default PopupWithForm;

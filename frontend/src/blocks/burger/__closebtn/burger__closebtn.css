@@ -1,0 +1,22 @@
+.burger__closebtn {
+    background-image: url("../../../images/CloseIcon.svg");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-color: transparent;
+    display: flex;
+    position: relative;
+    top: 0;
+    right: 0;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    width: 40px;
+    height: 40px;
+    border: none;
+    cursor: pointer;
+}
+
+.burger__closebtn:hover {
+    opacity: .6;
+    transition: opacity 2s ease;
+}

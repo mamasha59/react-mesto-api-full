@@ -1,0 +1,9 @@
+.header__nav {
+    margin: 0;
+    padding: 0 0 41px 0;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    list-style: none;
+}

@@ -1,0 +1,16 @@
+.elements__likebtn_active {
+    background-image: url(../../../../images/active.svg);
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+    margin: 0 5px 0 5px;
+    padding: 0;
+    box-sizing: border-box;
+    align-self: center;
+    width: 20px;
+    height: 18px;
+    cursor: pointer;
+    border: none;
+    outline: none;
+    background-color: transparent;
+}

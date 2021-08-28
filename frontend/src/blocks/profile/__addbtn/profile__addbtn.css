@@ -1,0 +1,29 @@
+.profile__addbtn {
+    grid-area: addbtn;
+    display: flex;
+    align-self: center;
+    justify-self: end;
+    padding: 14px 0;
+    border-radius: 2px;
+    border: 2px solid #ffffff;
+    cursor: pointer;
+    background: url(../../../images/addbtn.svg);
+    background-repeat: no-repeat;
+    background-position: center;
+    min-width: 150px;
+    min-height: 50px;
+}
+
+.profile__addbtn:hover {
+    opacity: .6;
+    transition: opacity 2s ease;
+}
+
+@media screen and (max-width: 768px) {
+    .profile__addbtn {
+        margin-top: 36px;
+        padding-top: 17px;
+        padding-bottom: 17px;
+        width: 100%;
+    }
+}

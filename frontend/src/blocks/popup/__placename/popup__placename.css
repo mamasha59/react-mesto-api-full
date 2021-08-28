@@ -1,0 +1,6 @@
+.popup__placename {
+    color: #000000;
+}
+.popup__placename::placeholder {
+    color: #C4C4C4;
+}

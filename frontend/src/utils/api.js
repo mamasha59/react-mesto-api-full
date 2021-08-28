@@ -1,99 +1,125 @@
-class Api {
-    constructor(config) {
-        this._url = config.baseUrl;
-        this._headers = config.headers;
+export default class Api {
+    constructor({address, token, groupID}) {
+        this._address = address;
+        this._token = token;
+        this._groupID = groupID;
+        this._getResponseJson = this._getResponseJson.bind(this);
     }
 
-    _checkResponse(res) {
-        if (res.ok) {
-            return res.json();
+    _getResponseData (response) {
+        if(response.ok) {
+            return Promise.resolve("done");
         }
-        return Promise.reject(`Ошибка: ${res.status}`);
+        return Promise.reject(new Error(`Ошибка: ${response.status}`));
     }
 
-    getUserInfo() {
-        return fetch(`${this._url}/users/me`, {
-            method: 'GET',
-            credentials: 'include',
-            headers: this._headers
+    _getResponseJson (response) {
+        if(response.ok) {
+            return response.json();
+        }
+        return Promise.reject(new Error(`Ошибка: ${response.status}`));
+    }
+
+    changeLikeCardStatus(_id, isLiked) {
+        return fetch (`${this._address}/v1/${this._groupID}/cards/likes/${_id}`, {
+            method: isLiked ? 'DELETE' : 'PUT',
+            headers: {
+                authorization: this._token
+            }
         })
-            .then(this._checkResponse);
+            .then(response => {
+                return this._getResponseJson(response);
+            });
+    }
+
+    editAvatar(avatar) {
+        return fetch(`${this._address}/v1/${this._groupID}/users/me/avatar`, {
+            method: 'PATCH',
+            headers: {
+                authorization: this._token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                avatar
+            })
+        })
+            .then(response => {
+                return this._getResponseJson(response);
+            });
+    }
+
+    editProfile(name, description) {
+        return fetch(`${this._address}/v1/${this._groupID}/users/me`, {
+            method: 'PATCH',
+            headers: {
+                authorization: this._token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: name,
+                about: description
+            })
+        })
+            .then(response => {
+                return this._getResponseJson(response);
+            });
+    }
+
+    getOwnerInfo() {
+        return fetch(`${this._address}/v1/${this._groupID}/users/me`,{
+            headers: {
+                authorization: this._token
+            }
+        })
+            .then(response => {
+               return this._getResponseJson(response);
+            });
     }
 
     getInitialCards() {
-        return fetch(`${this._url}/cards`, {
-            method: 'GET',
-            credentials: 'include',
-            headers: this._headers
+        return fetch(`${this._address}/v1/${this._groupID}/cards`, {
+            headers: {
+                authorization: this._token
+            }
         })
-            .then(this._checkResponse);
+            .then(response => {
+                return this._getResponseJson(response);
+            });
     }
 
-    setUserInfo(formData) {
-        return fetch(`${this._url}/users/me`, {
-            method: 'PATCH',
-            credentials: 'include',
-            headers: this._headers,
-            body: JSON.stringify({
-                name: formData.name,
-                about: formData.about
+    addNewCard(placeName, placeLink) {
+        return fetch(`${this._address}/v1/${this._groupID}/cards`,
+            {
+                method: "POST",
+                headers: {
+                    authorization: this._token,
+                    "Content-type": "application/json"
+                },
+                body: JSON.stringify({
+                    name: placeName,
+                    link: placeLink
+                })
             })
-        })
-            .then(this._checkResponse);
-    }
-
-    addCard(formData) {
-        return fetch(`${this._url}/cards`, {
-            method: 'POST',
-            credentials: 'include',
-            headers: this._headers,
-            body: JSON.stringify({
-                name: formData.name,
-                link: formData.link
+            .then(response => {
+                return this._getResponseJson(response);
             })
-        })
-            .then(this._checkResponse);
     }
 
-    removeCard(id) {
-        return fetch(`${this._url}/cards/${id}`, {
-            method: 'DELETE',
-            credentials: 'include',
-            headers: this._headers
+    deleteCard(_id) {
+        return fetch(`${this._address}/v1/${this._groupID}/cards/${_id}`, {
+            method: "DElETE",
+            headers: {
+                authorization: this._token
+            }
         })
-            .then(this._checkResponse);
-    }
-
-    changeLikeCardStatus(cardId, isLiked) {
-        return fetch(`${this._url}/cards/${cardId}/likes/`, {
-            method: isLiked ? 'PUT' : 'DELETE',
-            credentials: 'include',
-            headers: this._headers
-        })
-            .then(this._checkResponse);
-    }
-
-    setUserAvatar(formData) {
-        return fetch(`${this._url}/users/me/avatar`, {
-            method: 'PATCH',
-            credentials: 'include',
-            headers: this._headers,
-            body: JSON.stringify({
-                avatar: formData.avatar
+            .then(response => {
+                return this._getResponseData(response);
             })
-        })
-            .then(this._checkResponse);
     }
-
 }
 
-
 export const api = new Api({
-    baseUrl: 'https://api.future.bright.nomoredomains.club',
-    headers: {
-        'Content-Type': 'application/json'
-    }
+    address: "https://api.future.bright.nomoredomains.club",
+    token: "a7c83460-3094-477b-9fb5-f7c43e4b79fa",
+    groupID: "cohort-24"
 });
-
-
-

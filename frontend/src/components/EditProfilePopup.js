@@ -1,79 +1,79 @@
-import PopupWithForm from './PopupWithForm';
-import { useState, useEffect } from 'react';
-import { CurrentUserContext } from '../contexts/CurrentUserContext';
-import React from 'react';
+import React, {useState} from 'react';
+import { CurrentUserContext } from "../contexts/CurrentUserContext";
+import PopupWithForm from "./PopupWithForm";
 
-
-function EditProfilePopup(props) {
-
+function EditProfilePopup ({onUpdateUser, isOpened, onClose, isLoading}) {
+    const [name, setName] = useState("");
+    const [description, setDescription] = useState("");
     const currentUser = React.useContext(CurrentUserContext);
-    const [name, setName] = useState('');
-    const [description, setDescription] = useState('');
+    const [isEnable, setIsEnable] = useState(true);
+    const [isNameValid, setIsNameValid] = useState(true);
+    const [isDescriptionValid, setIsDescriptionValid] = useState(true);
 
-    useEffect(() => {
+    React.useEffect(() => {
         setName(currentUser.name);
         setDescription(currentUser.about);
-    }, [currentUser]);
-
-    function handleNameChange(e) {
-        setName(e.target.value);
-    }
-
-    function handleAboutChange(e) {
-        setDescription(e.target.value);
-    }
+        setIsNameValid(true);
+        setIsDescriptionValid(true);
+    }, [currentUser, isOpened]);
 
     function handleSubmit(e) {
         e.preventDefault();
-        props.onUpdateUser({
+        onUpdateUser({
             name,
-            about: description,
+            about: description
         });
     }
 
+    function handleNameChange(e) {
+        if (!e.target.validity.valid) {
+            setIsNameValid(false);
+            setIsEnable(false);
+        } else {
+            setIsEnable(true);
+            setIsNameValid(true);
+        }
+        setName(e.target.value);
+    }
+
+    function handleDescriptionChange(e) {
+        if (!e.target.validity.valid) {
+            setIsDescriptionValid(false);
+            setIsEnable(false);
+        } else {
+            setIsEnable(true);
+            setIsDescriptionValid(true);
+        }
+        setDescription(e.target.value);
+    }
+
     return (
-        <PopupWithForm
-            isOpen={props.isOpen}
-            onClose={props.onClose}
-            name="popup-edit"
-            title="Редактировать профиль"
-            button="Сохранить"
-            onSubmit={handleSubmit}
-        >
-            <label className="popup__label">
-                <input
-                    id="name__input"
-                    type="text"
-                    name="name"
-                    defaultValue={name}
-                    placeholder="Имя"
-                    className="popup__field popup__input"
-                    minLength="2"
-                    maxLength="40"
-                    required
-                    onChange={handleNameChange}
-                />
-                <span id="name__input-error"></span>
-            </label>
-            <label className="popup__label">
-                <input
-                    id="about__input"
-                    type="text"
-                    name="about"
-                    defaultValue={description}
-                    placeholder="О себе"
-                    className="popup__field popup__input"
-                    minLength="2"
-                    maxLength="200"
-                    required
-                    onChange={handleAboutChange}
-                />
-                <span id="about__input-error"></span>
-            </label>
+        <PopupWithForm name="profile-info-form" title="Редактировать профиль" value="Сохранить"
+                       isOpened={isOpened}
+                       onClose={onClose}
+                       onSubmit={handleSubmit}
+                       isLoading={isLoading}
+                       isEnable={isEnable}
+                       isNameValid={isNameValid}
+                       isDescriptionValid={isDescriptionValid}>
+            <fieldset className="popup__fields">
+                <input className={`popup__field popup__name ${!isNameValid ? 'popup__field_type_error' : ''}`}
+                       placeholder="Имя"
+                       value={name || ""}
+                       onChange={(e) => (handleNameChange(e))}
+                       type="text"
+                       required/>
+                <span className={`popup__input-error-message ${!isNameValid ? 'popup__input-error-message_active' : ''}`}>Напишите имя</span>
+                <input className={`popup__field popup__job ${!isDescriptionValid ? 'popup__field_type_error' : ''}`}
+                       placeholder="О себе"
+                       value={description || ""}
+                       onChange={(e) => (handleDescriptionChange(e))}
+                       type="text"
+                       required/>
+                <span className={`popup__input-error-message ${!isDescriptionValid ? 'popup__input-error-message_active' : ''}`}>O себе</span>
+            </fieldset>
         </PopupWithForm>
     );
 }
 
 export default EditProfilePopup;
-
-

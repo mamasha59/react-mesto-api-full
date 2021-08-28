@@ -1,0 +1,21 @@
+.burger__nav-link {
+    padding: 0 0 18px 0;
+    margin: 0 auto;
+    box-sizing: border-box;
+    font-family: Inter;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 18px;
+    line-height: 1.22;
+    text-align: center;
+    border: none;
+    outline: none;
+    background-color: transparent;
+    color: #FFFFFF;
+    list-style: none;
+    text-decoration: none;
+}
+
+.burger__nav-link:last-child {
+    padding: 0;
+}

@@ -1,11 +1,23 @@
 .profile__info {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+    grid-area: info;
+    margin: 0 auto;
+    padding: 0 0 0 30px;
+    box-sizing: border-box;
+    display: grid;
+    grid-template-rows: repeat(2, minmax(min-content, max-content));
+    grid-template-columns: repeat(2, minmax(min-content, max-content));
+    column-gap: 18px;
+    row-gap: 16px;
+    grid-template-areas:
+    "name editbtn"
+    "job .";
+
 }
 
-@media screen and (min-width: 1024px) {
+@media screen and (max-width: 768px) {
     .profile__info {
-        justify-content: flex-start;
+        padding-left: 0;
+        column-gap: 10px;
+        row-gap: 14px;
     }
 }

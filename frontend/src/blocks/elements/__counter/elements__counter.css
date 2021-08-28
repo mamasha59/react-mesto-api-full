@@ -1,0 +1,15 @@
+.elements__counter {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    width: 10px;
+    height: 13px;
+    display: flex;
+    align-self: center;
+    color: #000000;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 13px;
+    line-height: 16px;
+    text-align: center;
+}

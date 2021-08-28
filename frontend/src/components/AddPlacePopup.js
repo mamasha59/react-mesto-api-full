@@ -1,69 +1,77 @@
-import PopupWithForm from './PopupWithForm';
-import { useState } from 'react';
+import React, {useState} from 'react';
+import PopupWithForm from "./PopupWithForm";
 
+function AddPlacePopup ({onAddPlace, isOpened, onClose, isLoading}) {
+    const [placeName, setPlaceName] = useState("");
+    const [placeLink, setPlaceLink] = useState("");
+    const [isEnable, setIsEnable] = useState(true);
+    const [isPlaceNameValid, setIsPlaceNameValid] = useState(true);
+    const [isPlaceLinkValid, setIsPlaceLinkValid] = useState(true);
 
-function AddPlacePopup(props) {
+    React.useEffect(() => {
+        setPlaceName("");
+        setPlaceLink("");
+        setIsPlaceNameValid(true);
+        setIsPlaceLinkValid(true);
+    }, [isOpened]);
 
-    const [name, setName] = useState('');
-    const [link, setLink] = useState('');
-
-    function handleAddName(e) {
-        setName(e.target.value);
+    function handlePlaceNameChange(e) {
+        if (!e.target.validity.valid) {
+            setIsPlaceNameValid(false);
+            setIsEnable(false);
+        } else {
+            setIsEnable(true);
+            setIsPlaceNameValid(true);
+        }
+        setPlaceName(e.target.value);
     }
 
-    function handleAddLink(e) {
-        setLink(e.target.value);
+    function handlePlaceLinkChange(e) {
+        if (!e.target.validity.valid) {
+            setIsPlaceLinkValid(false);
+            setIsEnable(false);
+        } else {
+            setIsEnable(true);
+            setIsPlaceLinkValid(true);
+        }
+        setPlaceLink(e.target.value);
     }
 
     function handleSubmit(e) {
         e.preventDefault();
-        props.onAddPlace({
-            name,
-            link
+        onAddPlace({
+            placename: placeName,
+            placelink: placeLink
         });
-        setName('');
-        setLink('');
     }
 
     return (
-        <PopupWithForm
-            isOpen={props.isOpen}
-            onClose={props.onClose}
-            name="popup-add"
-            title="Новое место"
-            button="Создать"
-            onSubmit={handleSubmit}
-        >
-            <label className="popup__label">
-                <input
-                    id="title__input"
-                    type="text"
-                    name="name"
-                    value={name}
-                    placeholder="Название"
-                    className="popup__field popup__input"
-                    minLength="2"
-                    maxLength="40"
-                    required
-                    onChange={handleAddName}
-                />
-                <span id="name__input-error"></span>
-            </label>
-            <label className="popup__label">
-                <input
-                    id="link__input"
-                    type="text"
-                    name="about"
-                    value={link}
-                    placeholder="Ссылка на картинку"
-                    className="popup__field popup__input"
-                    minLength="2"
-                    maxLength="200"
-                    required
-                    onChange={handleAddLink}
-                />
-                <span id="about__input-error"></span>
-            </label>
+        <PopupWithForm name="photo-adding-form" title="Новое место" value="Создать"
+                       isOpened={isOpened}
+                       onClose={onClose}
+                       onSubmit={handleSubmit}
+                       isLoading={isLoading}
+                       isEnable={isEnable}
+                       isPlaceNameValid={isPlaceNameValid}
+                       isPlaceLinkValid={isPlaceLinkValid}>
+            <fieldset className="popup__fields">
+                <input className={`popup__field popup__placename ${!isPlaceNameValid ? 'popup__field_type_error' : ''}`}
+                       placeholder="Название места"
+                       value={placeName}
+                       onChange={(e) => (handlePlaceNameChange(e))}
+                       type="text"
+                       required
+                       minLength="2"
+                       maxLength="40"/>
+                <span className={`popup__input-error-message ${!isPlaceNameValid ? 'popup__input-error-message_active' : ''}`}>Как называется место?</span>
+                <input className={`popup__field popup__placelink ${!isPlaceLinkValid ? 'popup__field_type_error' : ''}`}
+                       placeholder="Ссылка на картинку"
+                       value={placeLink}
+                       onChange={(e) => (handlePlaceLinkChange(e))}
+                       type="url"
+                       required/>
+                <span className={`popup__input-error-message ${!isPlaceLinkValid ? 'popup__input-error-message_active' : ''}`}>Здесь должна быть ссылка</span>
+            </fieldset>
         </PopupWithForm>
     );
 }

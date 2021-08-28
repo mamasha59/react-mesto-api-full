@@ -1,0 +1,7 @@
+.popup__placelink {
+    color: #000000;
+}
+
+.popup__placelink::placeholder {
+    color: #C4C4C4;
+}
