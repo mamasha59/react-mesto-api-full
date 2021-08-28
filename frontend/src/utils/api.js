@@ -120,6 +120,8 @@ export default class Api {
 
 export const api = new Api({
     address: "https://api.future.bright.nomoredomains.club",
-    token: "a7c83460-3094-477b-9fb5-f7c43e4b79fa",
-    groupID: "cohort-24"
+    headers: {
+        authorization: 'a7c83460-3094-477b-9fb5-f7c43e4b79fa',
+        'Content-Type': 'application/json'
+    }
 });
