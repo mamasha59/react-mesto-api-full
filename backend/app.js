@@ -30,10 +30,7 @@ app.use(
     origin: [
       'http://localhost:3000',
       'https://future.bright.nomoredomains.club',
-      'http://future.bright.nomoredomains.club',
-      'https://api.future.bright.nomoredomains.club/',
-      'http://api.future.bright.nomoredomains.club',
-      'https://github.com/mamasha59/react-mesto-api-full',
+      'https://api.future.bright.nomoredomains.club',
     ],
     credentials: true,
   })
