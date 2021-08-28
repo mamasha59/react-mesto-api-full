@@ -11,3 +11,9 @@
   .header__login:hover {
      cursor: pointer;
   }
+
+  @media screen and (max-width: 523px) {
+   .header__login {
+   font-size: 15px;
+     }
+ }
