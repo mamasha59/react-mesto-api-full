@@ -4,7 +4,7 @@ const express = require('express');
 const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-
+const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 const cookieParser = require('cookie-parser');
 
@@ -44,31 +44,29 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-const allowedCors = [
-  'http://localhost:3000',
-  'https://future.bright.nomoredomains.club',
-  'http://future.bright.nomoredomains.club',
-  'https://api.future.bright.nomoredomains.club',
-  'http://api.future.bright.nomoredomains.club',
-  'https://github.com/mamasha59/react-mesto-api-full',
-];
+const options = {
+  origin: [
+    'http://localhost:3000',
+    'https://future.bright.nomoredomains.club',
+    'http://future.bright.nomoredomains.club',
+    'https://api.future.bright.nomoredomains.club/',
+    'http://api.future.bright.nomoredomains.club',
+    'https://github.com/mamasha59/react-mesto-api-full',
 
-app.use((req, res, next) => {
-  const { origin } = req.headers;
-  if (allowedCors.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
-  }
-  const { method } = req;
-  const DEFAULT_ALLOWED_METHODS = 'GET,HEAD,PUT,PATCH,POST,DELETE';
-  if (method === 'OPTIONS') {
-    res.header('Access-Control-Allow-Methods', DEFAULT_ALLOWED_METHODS);
-  }
-  const requestHeaders = req.headers['access-control-request-headers'];
-  if (method === 'OPTIONS') {
-    res.header('Access-Control-Allow-Headers', requestHeaders);
-  }
+  ],
+  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
+  preflightContinue: false,
+  optionsSuccessStatus: 204,
+  allowedHeaders: ['Content-Type', 'origin', 'Authorization'],
+  credentials: true,
+};
 
-  next();
+app.use('*', cors(options));
+
+app.get('/crash-test', () => { // --краш тест
+  setTimeout(() => {
+    throw new Error('Сервер сейчас упадёт');
+  }, 0);
 });
 
 app.post('/signin', celebrate({
