@@ -29,8 +29,11 @@ app.use(
   cors({
     origin: [
       'http://localhost:3000',
-      'http://enslit.nomoredomains.monster',
-      'https://enslit.nomoredomains.monster',
+      'https://future.bright.nomoredomains.club',
+      'http://future.bright.nomoredomains.club',
+      'https://api.future.bright.nomoredomains.club/',
+      'http://api.future.bright.nomoredomains.club',
+      'https://github.com/mamasha59/react-mesto-api-full',
     ],
     credentials: true,
   })
