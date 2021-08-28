@@ -21,7 +21,7 @@ export default class Api {
     }
 
     changeLikeCardStatus(_id, isLiked) {
-        return fetch (`${this._address}/v1/${this._groupID}/cards/likes/${_id}`, {
+        return fetch (`${this._address}/cards/likes/${_id}`, {
             method: isLiked ? 'DELETE' : 'PUT',
             headers: {
                 authorization: this._token
@@ -33,7 +33,7 @@ export default class Api {
     }
 
     editAvatar(avatar) {
-        return fetch(`${this._address}/v1/${this._groupID}/users/me/avatar`, {
+        return fetch(`${this._address}/users/me/avatar`, {
             method: 'PATCH',
             headers: {
                 authorization: this._token,
@@ -49,7 +49,7 @@ export default class Api {
     }
 
     editProfile(name, description) {
-        return fetch(`${this._address}/v1/${this._groupID}/users/me`, {
+        return fetch(`${this._address}/users/me`, {
             method: 'PATCH',
             headers: {
                 authorization: this._token,
@@ -66,7 +66,7 @@ export default class Api {
     }
 
     getOwnerInfo() {
-        return fetch(`${this._address}/v1/${this._groupID}/users/me`,{
+        return fetch(`${this._address}/users/me`,{
             headers: {
                 authorization: this._token
             }
@@ -77,7 +77,7 @@ export default class Api {
     }
 
     getInitialCards() {
-        return fetch(`${this._address}/v1/${this._groupID}/cards`, {
+        return fetch(`${this._address}/cards`, {
             headers: {
                 authorization: this._token
             }
@@ -88,7 +88,7 @@ export default class Api {
     }
 
     addNewCard(placeName, placeLink) {
-        return fetch(`${this._address}/v1/${this._groupID}/cards`,
+        return fetch(`${this._address}/cards`,
             {
                 method: "POST",
                 headers: {
@@ -106,7 +106,7 @@ export default class Api {
     }
 
     deleteCard(_id) {
-        return fetch(`${this._address}/v1/${this._groupID}/cards/${_id}`, {
+        return fetch(`${this._address}/cards/${_id}`, {
             method: "DElETE",
             headers: {
                 authorization: this._token
