@@ -31,6 +31,12 @@ const createCard = (req, res, next) => {
       }
       res.status(200).send(card);
     })
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        throw new BadRequest('Что-то не так с запросом.'); // ---- ошибка 400
+      }
+      next(err);
+    })
     .catch(next);
 };
 
