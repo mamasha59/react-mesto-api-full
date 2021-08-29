@@ -2,7 +2,6 @@
 require('dotenv').config();
 const express = require('express');
 
-const helmet = require('helmet');
 const mongoose = require('mongoose');
 const { errors, celebrate, Joi } = require('celebrate');
 const rateLimit = require('express-rate-limit');
@@ -17,7 +16,6 @@ const auth = require('./middlewares/auth');
 const { PORT = 3000 } = process.env;
 const app = express();
 
-app.use(helmet());
 
 const limiter = rateLimit({ // ---защита от ddos атак
   windowMs: 15 * 60 * 1000, // за 15 минут
