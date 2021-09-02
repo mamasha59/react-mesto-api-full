@@ -14,7 +14,7 @@
 .grid {
   max-width: 882px;
   padding-top: 50px;
-  padding-bottom: 66px;
+  margin: 0 auto;
 }
 
 @media screen and (max-width: 999px) {

@@ -203,7 +203,6 @@ function App() {
         
       <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
-          <div className="page__content">
               <Header loggedIn={loggedIn} email={email} handleLogout={handleLogout}/>
               <Switch>
                <ProtectedRoute exact path="/" loggedIn={loggedIn} component={Main}
@@ -232,7 +231,6 @@ function App() {
               <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} onAddPlace={handleAddPlaceSubmit}/>
               <PopupWithForm name="type_submit" title="Вы уверены?" buttonTitle="Да"/>
               <InfoTooltip isOpen={isRegisterPopupOpen} onClose={closeAllPopups} message={message} />
-          </div>
         </div>
 
       </CurrentUserContext.Provider>
